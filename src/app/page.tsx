@@ -8,86 +8,86 @@ export default function Home() {
       id: "biskie",
       title: "Biskie Brand Concept",
       category: "Branding",
-      imageUrl: "/brain_rot_designs/biskie_hero_section.png",
+      imageUrl: "/brain_rot_designs/biskie_hero_section.avif",
       galleryImages: [
-        "/brain_rot_designs/biskie_hero_section.png",
-        "/brain_rot_designs/biskie_landing_page.png"
+        "/brain_rot_designs/biskie_hero_section.avif",
+        "/brain_rot_designs/biskie_landing_page.avif"
       ]
     },
     {
       id: "pac-delivery",
       title: "PAC Delivery App Concept",
       category: "Product Design",
-      imageUrl: "/brain_rot_designs/pac_inspired_delivery_app_design.png",
+      imageUrl: "/brain_rot_designs/pac_inspired_delivery_app_design.avif",
       galleryImages: [
-        "/brain_rot_designs/pac_inspired_delivery_app_design.png",
-        "/brain_rot_designs/pac_inspired_delivery_app_design_1.png",
-        "/brain_rot_designs/pac_inspired_delivery_app_design_2.png"
+        "/brain_rot_designs/pac_inspired_delivery_app_design.avif",
+        "/brain_rot_designs/pac_inspired_delivery_app_design_1.avif",
+        "/brain_rot_designs/pac_inspired_delivery_app_design_2.avif"
       ]
     },
     {
       id: "sm-cinema",
       title: "SM Cinema Redesign Concept",
       category: "Interface Design",
-      imageUrl: "/brain_rot_designs/sm_redesign_1.png",
+      imageUrl: "/brain_rot_designs/sm_redesign_1.avif",
       galleryImages: [
-        "/brain_rot_designs/sm_redesign_1.png",
-        "/brain_rot_designs/sm_redesign_2.png"
+        "/brain_rot_designs/sm_redesign_1.avif",
+        "/brain_rot_designs/sm_redesign_2.avif"
       ]
     },
     {
       id: "kendrick",
       title: "Kendrick Lamar Hero",
       category: "Editorial Design",
-      imageUrl: "/brain_rot_designs/kendrick_lamar_hero_design.png"
+      imageUrl: "/brain_rot_designs/kendrick_lamar_hero_design.avif"
     },
     {
       id: "vader",
       title: "Darth Vader Concept",
       category: "Editorial Design",
-      imageUrl: "/brain_rot_designs/darth_vader_hero_design.png"
+      imageUrl: "/brain_rot_designs/darth_vader_hero_design.avif"
     },
     {
       id: "drake",
       title: "Drake Hero Design",
       category: "Editorial Design",
-      imageUrl: "/brain_rot_designs/drake_hero_design.png"
+      imageUrl: "/brain_rot_designs/drake_hero_design.avif"
     },
     {
       id: "pacers",
       title: "Indiana Pacers Hero",
       category: "Sports Branding",
-      imageUrl: "/brain_rot_designs/indiana_pacers_hero_section_design.png"
+      imageUrl: "/brain_rot_designs/indiana_pacers_hero_section_design.avif"
     },
     {
       id: "nike",
       title: "Nike Hero Concept",
       category: "Product Design",
-      imageUrl: "/brain_rot_designs/nike_hero_section_design.png"
+      imageUrl: "/brain_rot_designs/nike_hero_section_design.avif"
     },
     {
       id: "car-rental",
       title: "Car Rental UI",
       category: "App Concept",
-      imageUrl: "/brain_rot_designs/car_rental_concept.png"
+      imageUrl: "/brain_rot_designs/car_rental_concept.avif"
     },
     {
       id: "coffee",
       title: "Coffee Shop App",
       category: "App Concept",
-      imageUrl: "/brain_rot_designs/coffee_shop_concept_app.png"
+      imageUrl: "/brain_rot_designs/coffee_shop_concept_app.avif"
     },
     {
       id: "pokemon",
       title: "Pokemon Landing",
       category: "Web Design",
-      imageUrl: "/brain_rot_designs/pokemon_landing_page.png"
+      imageUrl: "/brain_rot_designs/pokemon_landing_page.avif"
     },
     {
       id: "spotify",
       title: "Spotify Dashboard",
       category: "Interface Design",
-      imageUrl: "/brain_rot_designs/spotify_dashboard_concept.png"
+      imageUrl: "/brain_rot_designs/spotify_dashboard_concept.avif"
     }
   ];
 
@@ -96,9 +96,9 @@ export default function Home() {
       id: "slade",
       title: "Slade Comics",
       description: "Inspired by a desire for a free, high-fidelity comic reading experience, Slade was built to modernize the interaction with .cbz and .cbr files. A Flutter project integrated with the Figma API via MCP, it features a gesture-based reader, library management, and persistent progress tracking.",
-      imageUrl: "/personal_apps/slade_comics.png",
-      galleryImages: ["/personal_apps/slade_comics.png"],
-      videoUrl: "/personal_apps/slade_comics_demo.mp4",
+      imageUrl: "/personal_apps/slade_comics.avif",
+      galleryImages: ["/personal_apps/slade_comics.avif"],
+      videoUrl: "/personal_apps/slade_comics_demo.webm",
       link: "#",
       tags: ["Flutter", "Figma API", "MCP", "Vibe-Coding"]
     },
@@ -106,9 +106,9 @@ export default function Home() {
       id: "broke-basket",
       title: "The Broke Basket",
       description: "An offline-first Android app created to replace the traditional grocery notebook and manual calculator. Built for seamless budget tracking during shopping trips, it provides a basic yet efficient and reliable experience without the need for an account or connectivity.",
-      imageUrl: "/personal_apps/the_broke_basket_1.png",
-      galleryImages: ["/personal_apps/the_broke_basket_1.png", "/personal_apps/the_broke_basket_2.png"],
-      videoUrl: "/personal_apps/broke_basket_demo.mp4",
+      imageUrl: "/personal_apps/the_broke_basket_1.avif",
+      galleryImages: ["/personal_apps/the_broke_basket_1.avif", "/personal_apps/the_broke_basket_2.avif"],
+      videoUrl: "/personal_apps/broke_basket_demo.webm",
       link: "#",
       tags: ["React Native", "Expo", "Tailwind", "Antigravity"]
     }

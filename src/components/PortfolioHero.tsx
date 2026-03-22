@@ -102,7 +102,7 @@ export function PortfolioHero() {
                 >
                     {/* Default Image (Bottom layer) */}
                     <Image
-                        src="/hero_image/default.png"
+                        src="/hero_image/default.avif"
                         alt="End of Day Default"
                         fill
                         className="object-cover transition-transform duration-1000 group-hover:scale-[1.02]"
@@ -118,7 +118,7 @@ export function PortfolioHero() {
                         }}
                     >
                         <Image
-                            src="/hero_image/jedi.png"
+                            src="/hero_image/jedi.avif"
                             alt="End of Day Reveal"
                             fill
                             className="object-cover transition-transform duration-1000 group-hover:scale-[1.02]"
