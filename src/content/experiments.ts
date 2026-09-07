@@ -1,0 +1,196 @@
+import type { Experiment } from "./schema";
+
+export const experiments: Experiment[] = [
+  {
+    id: "biskie",
+    title: "Biskie Brand Concept",
+    category: "Branding",
+    cover: {
+      src: "/brain_rot_designs/biskie_hero_section.avif",
+      alt: "Biskie bakery hero and menu interface concept.",
+      width: 1080,
+      height: 1080,
+    },
+    gallery: [
+      {
+        src: "/brain_rot_designs/biskie_hero_section.avif",
+        alt: "Biskie bakery hero and menu interface concept.",
+        width: 1080,
+        height: 1080,
+      },
+      {
+        src: "/brain_rot_designs/biskie_landing_page.avif",
+        alt: "Extended Biskie bakery landing page concept.",
+        width: 1080,
+        height: 1080,
+      },
+    ],
+    layout: "wide",
+  },
+  {
+    id: "pac-delivery",
+    title: "PAC Delivery App Concept",
+    category: "Product design",
+    cover: {
+      src: "/brain_rot_designs/pac_inspired_delivery_app_design.avif",
+      alt: "PAC-inspired delivery application concept shown on two phones.",
+      width: 1080,
+      height: 1080,
+    },
+    gallery: [
+      {
+        src: "/brain_rot_designs/pac_inspired_delivery_app_design.avif",
+        alt: "PAC-inspired delivery application concept shown on two phones.",
+        width: 1080,
+        height: 1080,
+      },
+      {
+        src: "/brain_rot_designs/pac_inspired_delivery_app_design_1.avif",
+        alt: "PAC-inspired delivery application interface exploration.",
+        width: 1080,
+        height: 1080,
+      },
+      {
+        src: "/brain_rot_designs/pac_inspired_delivery_app_design_2.avif",
+        alt: "PAC-inspired delivery application alternate interface exploration.",
+        width: 1080,
+        height: 1080,
+      },
+    ],
+    layout: "compact",
+  },
+  {
+    id: "sm-cinema",
+    title: "SM Cinema Redesign Concept",
+    category: "Interface design",
+    cover: {
+      src: "/brain_rot_designs/sm_redesign_1.avif",
+      alt: "SM Cinema mobile redesign concept shown on two phones.",
+      width: 1080,
+      height: 1080,
+    },
+    gallery: [
+      {
+        src: "/brain_rot_designs/sm_redesign_1.avif",
+        alt: "SM Cinema mobile redesign concept shown on two phones.",
+        width: 1080,
+        height: 1080,
+      },
+      {
+        src: "/brain_rot_designs/sm_redesign_2.avif",
+        alt: "Additional SM Cinema booking and browsing interface concepts.",
+        width: 1080,
+        height: 1080,
+      },
+    ],
+    layout: "half",
+  },
+  {
+    id: "kendrick",
+    title: "Kendrick Lamar Hero",
+    category: "Editorial design",
+    cover: {
+      src: "/brain_rot_designs/kendrick_lamar_hero_design.avif",
+      alt: "Kendrick Lamar editorial hero concept in a dark blue composition.",
+      width: 2048,
+      height: 2048,
+    },
+    layout: "half",
+  },
+  {
+    id: "vader",
+    title: "Darth Vader Concept",
+    category: "Editorial design",
+    cover: {
+      src: "/brain_rot_designs/darth_vader_hero_design.avif",
+      alt: "Darth Vader editorial landing page concept.",
+      width: 960,
+      height: 720,
+    },
+    layout: "compact",
+  },
+  {
+    id: "drake",
+    title: "Drake Hero Design",
+    category: "Editorial design",
+    cover: {
+      src: "/brain_rot_designs/drake_hero_design.avif",
+      alt: "Drake editorial hero page concept.",
+      width: 960,
+      height: 720,
+    },
+    layout: "wide",
+  },
+  {
+    id: "pacers",
+    title: "Indiana Pacers Hero",
+    category: "Sports branding",
+    cover: {
+      src: "/brain_rot_designs/indiana_pacers_hero_section_design.avif",
+      alt: "Indiana Pacers sports branding hero concept.",
+      width: 1080,
+      height: 1080,
+    },
+    layout: "half",
+  },
+  {
+    id: "nike",
+    title: "Nike Hero Concept",
+    category: "Product design",
+    cover: {
+      src: "/brain_rot_designs/nike_hero_section_design.avif",
+      alt: "Nike product hero interface concept.",
+      width: 1920,
+      height: 1440,
+    },
+    layout: "half",
+  },
+  {
+    id: "car-rental",
+    title: "Car Rental UI",
+    category: "App concept",
+    cover: {
+      src: "/brain_rot_designs/car_rental_concept.avif",
+      alt: "Car rental mobile application interface concept.",
+      width: 2160,
+      height: 2160,
+    },
+    layout: "compact",
+  },
+  {
+    id: "coffee",
+    title: "Coffee Shop App",
+    category: "App concept",
+    cover: {
+      src: "/brain_rot_designs/coffee_shop_concept_app.avif",
+      alt: "Coffee shop mobile application concept.",
+      width: 1920,
+      height: 1440,
+    },
+    layout: "wide",
+  },
+  {
+    id: "pokemon",
+    title: "Pokemon Landing",
+    category: "Web design",
+    cover: {
+      src: "/brain_rot_designs/pokemon_landing_page.avif",
+      alt: "Pokemon-themed landing page concept.",
+      width: 960,
+      height: 720,
+    },
+    layout: "half",
+  },
+  {
+    id: "spotify",
+    title: "Spotify Dashboard",
+    category: "Interface design",
+    cover: {
+      src: "/brain_rot_designs/spotify_dashboard_concept.avif",
+      alt: "Spotify analytics dashboard interface concept.",
+      width: 2160,
+      height: 2160,
+    },
+    layout: "half",
+  },
+];

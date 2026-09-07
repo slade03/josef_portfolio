@@ -39,3 +39,25 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Case-study image sources.
+# Un-anonymised originals: brand marks, client prototypes, tester identifiers.
+# Only the redacted AVIFs under public/work/ are ever committed. Keep these out
+# of history, because a redaction that happened after the commit is not a
+# redaction.
+/food-bev-app
+/sm-cinema-app-redesign
+/design-agent-captures
+/animation-flow-matcha.webm
+
+# Local design inputs and generated previews.
+/.claude
+/.pnpm-store
+/.tmp
+/coolvetica.zip
+/erp-system
+/lightsaber training.png
+/Lightsaber Training Simulation.webm
+/tennis cover.png
+/tennis main image.png
+/package-lock.json

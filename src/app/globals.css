@@ -1,127 +1,3790 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+/* ==========================================================================
+   Josef Nicolas — Portfolio '26
+   Implemented from the Claude Design artboard "Josef Nicolas Portfolio.dc.html"
+   (project: Portfolio website ideation). Values below are the artboard's own.
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
-  --font-oswald: var(--font-oswald);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+   This file replaced two earlier systems wholesale: the light xhulia-derived
+   tokens and the roshan-derived work rows. Nothing from either survives.
+   ========================================================================== */
+
+@theme {
+  /* ---- Fonts. Bound here rather than aliased at :root, because next/font
+     declares its variables on <body>'s className and a :root-level alias
+     cannot resolve them. The self-reference is load-bearing: the token on the
+     right resolves against <body>, one level down, not against itself.
+     Two families. There is no mono any more. ---------------------------- */
+  --font-display: var(--font-display), "Arial Narrow", system-ui, sans-serif;
+  --font-body: var(--font-body), "Source Sans 3", system-ui, sans-serif;
+
+  /* ---- Grounds ---------------------------------------------------------
+     THREE OF THEM: white, grey, black. That is the whole background palette,
+     and each section takes exactly one.
+
+       Hero          paper   white
+       Works         stone   grey
+       Playground    void    black
+       Testimonials  paper   white
+       Outside       void    black
+       Ready         void    black
+       Contact       void    black
+
+     What this replaced: one dark ground, one warm-cream panel, and a coral
+     drench over the whole Playground. The coral was doing all the work of
+     separating anything from anything, because the panels overlap by 110px
+     with no divider and everything else was one of two values.
+
+     `stone` is the new one, and it is why Works reads as a different room
+     rather than a continuation. It is a genuinely light grey, so Works flipped
+     from a dark panel to a light one: the CARDS are unaffected, because each
+     one paints its own near-black ground and inks its own type, which is also
+     why dark cards now sit on a light table rather than dissolving into it.
+
+     Ready and Contact share `void` on purpose. They are one closing move, not
+     two sections, and Testimonials keeps them from touching Playground. */
+  --color-ink-bg: #08080a; /* void */
+  --color-ink-fg: #f2f2f5;
+
+  /* ---- Light panels ----------------------------------------------------
+     Two of them, one ink family. `stone` is the designer's value and the warm
+     exception to the blue-leaning tint the dark ramp uses: red sits a couple of
+     points above blue here rather than below it.
+
+     Every value below is measured against `stone`, the DARKER of the two light
+     grounds, so anything that passes there passes on paper as well. */
+  --color-paper: #f3f3f5;
+  --color-stone: #e5e4e2;
+  --color-paper-fg: #14141a; /* 14.44:1 on stone */
+  --color-paper-muted: #62626e; /* 4.73:1 on stone */
+  --color-paper-line: #cfcfd4; /* 1.22:1 hairline, never text */
+
+  /* ---- Accent ----------------------------------------------------------
+     One blue, three roles, and what separates them is which ground the colour
+     is standing on. Measured, not eyeballed:
+
+       accent on paper .............. 4.87:1   (passes as text)
+       on-accent on accent .......... 5.73:1   (so the marquee bands work)
+       accent-tint on void .......... 9.51:1
+       accent-tint on slate ......... 8.15:1
+       accent-hover on void ......... 6.71:1
+       accent-hover on slate ........ 5.76:1
+       accent border on paper ....... 4.87:1
+       accent border on slate ....... 2.77:1   <- SEE --color-focus BELOW
+
+     `accent` is deep enough to read as text on white and to carry light type
+     when it is a surface. It CANNOT be read as text on a dark ground, which is
+     what `accent-tint` is for. Do not substitute one for the other.
+
+     Deep rather than luminous, which the previous coral could not afford to be:
+     the Playground was an accent drench with near-black type over it, so the
+     accent had to stay light enough to hold 5.85:1 across a whole panel. That
+     drench is gone, and the constraint went with it.
+
+     There is no second accent. A `--color-indigo` used to live here for exactly
+     one rule: the number on a playground card. A second blue beside a blue
+     accent is not a palette, it is a near-miss. Both the token and the rule are
+     gone now, the numbers with them. */
+  --color-accent: #2653e0;
+  --color-accent-hover: #6a90ff; /* links, dark grounds only */
+  --color-accent-tint: #8fb2ff; /* the text-on-dark variant */
+
+  /* The focus ring. A non-text UI indicator needs 3:1 against its background,
+     and no single value is best on all three grounds, so this is a default plus
+     one upgrade:
+
+       accent on paper .... 5.58:1
+       accent on stone .... 4.87:1
+       accent on void ..... 3.24:1     <- thin, but it passes
+       tint   on void ..... 9.51:1
+       tint   on paper .... 1.71:1     <- FAILS, which is the whole point
+
+     THE DEFAULT IS THE ACCENT because it is the only value that passes on every
+     ground, and things that float do not know their ground: the nav is `fixed`
+     and transparent, so it crosses white, grey and black on one scroll, and the
+     hero is a light section that is not a `.jn-panel` at all. Both of those
+     inherited a pale ring on near-white when the default was the tint.
+
+     `.jn-panel--void` then upgrades to the tint, because on a known-dark ground
+     a much brighter ring is available for free. Default safe, upgrade where the
+     ground is certain. */
+  --color-focus: var(--color-accent);
+
+  /* Type and marks that sit ON the accent. Near-white, because the accent is
+     deep: near-black ink over #2b5cf0 measures 3.40:1 and fails. This replaced
+     `--color-play-ink`, whose entire existence assumed the opposite. */
+  --color-on-accent: #f4f6ff;
+
+  /* ---- Muted inks and borders (dark) ----------------------------------
+     Lightened as a set, because the old ramp did not pass on its own ground:
+     measured against the previous #0b0b0d, mute-4 came in at 3.72:1 and mute-5
+     at 2.70:1. Every step now clears its target on `void` and on the near-black
+     card grounds, which are the only places these are used:
+
+       mute-1 on void ......... 8.47:1
+       mute-2 on void ......... 6.82:1
+       mute-3 on void ......... 5.55:1
+       mute-4 on void ......... 4.97:1
+       mute-4 on card ......... 4.71:1
+       mute-5 on card ......... 3.19:1   (decorative placeholder text only)
+
+     `mute-5` is card-ground only and is not text anybody has to read. If a
+     fifth step is ever wanted for real copy, measure it first. */
+  --color-mute-1: #a8a8b0;
+  --color-mute-2: #96969f;
+  --color-mute-3: #86868f;
+  --color-mute-4: #7e7e86;
+  --color-mute-5: #63636b;
+  --color-line-1: #26262c;
+  --color-line-2: #2b2b33;
+  --color-line-3: #2e2e37;
+  --color-line-4: #31313a;
+
+  /* ---- One value that is locked to a raster, and must not be tuned -----
+     `handover-visual.png` is a 3D render whose own background is #0d0d11. The
+     figure frame matches it exactly so the render bleeds into the page and the
+     1px border is the only edge in sight. Change this and that one figure grows
+     a visible rectangle around it.
+
+     It was a bare literal in two rules plus a comment in
+     scripts/build-case-assets.mjs, with nothing connecting the three. A token
+     at least writes the coupling down once. */
+  --color-figure-ground: #0d0d11;
+
+  /* ---- Panel stack ---------------------------------------------------- */
+  /* Sharp. Every corner on the page is square except things that are actually
+     circles (the cursor, status dots, icon discs) — those keep 999px because
+     zeroing them would turn a circle into a square. */
+  --panel-radius: 0px;
+  --panel-overlap: 110px;
+
+  /* ---- Type scale -----------------------------------------------------
+     The previous version of this block claimed three display steps "used
+     everywhere" and shipped THIRTEEN live display caps (150 · 118 · 116 · 104
+     · 84 · 76 · 58 · 48 · 42 · 40 · 38 · 36 · 26px), because ten selectors
+     wrote their own `clamp()` instead of reaching for a token. Eight steps
+     now, and the rule that keeps them honest:
+
+         >= 1.375rem is DISPLAY and takes --font-display.
+         Below that is TEXT and takes the body family.
+
+     rem throughout, so the scale respects the reader's browser font size.
+     Every clamp stays inside max <= 2.5x min; wider than that and browser
+     zoom starts behaving strangely.
+
+     Deliberately restrained at the top: the previous build peaked at 150px and
+     the page read as shouting. Ratios between steps are 1.4-1.43, which is well
+     past the 1.25 a hierarchy needs to be legible, so the steps stay clearly
+     distinct without the display tier taking over the composition. */
+  --fs-display-1: clamp(2.5rem, 6vw, 5rem); /* 40 -> 80px */
+  --fs-display-2: clamp(2rem, 4.2vw, 3.5rem); /* 32 -> 56px */
+  --fs-display-3: clamp(1.625rem, 3vw, 2.5rem); /* 26 -> 40px */
+  --fs-display-4: clamp(1.375rem, 2vw, 1.75rem); /* 22 -> 28px */
+
+  --fs-lead: 1.25rem; /* 20px */
+  --fs-body: 1rem; /* 16px */
+  --fs-label: 0.9375rem; /* 15px, always paired with weight 600 */
+  --fs-caption: 0.875rem; /* 14px */
+
+  /* ---- Leading ---------------------------------------------------------
+     The old display line-height was 0.86, which only worked because every
+     heading was uppercase and therefore had no descenders. In sentence case
+     0.86 drives `g`, `y` and `p` straight into the next line's ascenders. */
+  --lh-display: 1.02;
+  --lh-heading: 1.1;
+  --lh-lead: 1.3;
+  --lh-body: 1.6; /* was 1.55; light-on-dark reads lighter and wants the room */
+
+  /* ---- Tracking --------------------------------------------------------
+     Was eleven ad-hoc values with no logic: semantically identical elements in
+     the SAME component disagreed (.jn-wpanel__meta at 0.1em beside
+     .jn-wpanel__cta at 0.12em).
+
+     Four steps now, and they ramp on one principle — tracking OPENS as type
+     gets smaller, which is how optical sizing actually works. Big type has
+     enough internal space already and wants pulling together; small type is
+     cramped and wants letting out.
+
+     Two corrections are baked in. Coolvetica is drawn tight to begin with, so
+     the old -0.03em/-0.035em display tracking would have collided glyphs, and
+     the display steps stay shallow. And this is light type on a dark ground,
+     which optically thins and tightens everything — so the text steps carry a
+     positive value they would not need on white. */
+  --ls-display: -0.015em; /* display-1 / display-2 */
+  --ls-heading: -0.005em; /* display-3 / display-4 */
+  --ls-body: 0.01em; /* running text */
+  --ls-label: 0.02em; /* 14-15px labels and captions */
+
+  --gutter: 40px;
+
+  /* ---- Motion --------------------------------------------------------- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.22, 0.7, 0.2, 1);
 }
 
-:root {
-  --radius: 0rem;
-  --background: oklch(0 0 0);
-  --foreground: oklch(1 0 0);
-  --card: oklch(0 0 0);
-  --card-foreground: oklch(1 0 0);
-  --popover: oklch(0 0 0);
-  --popover-foreground: oklch(1 0 0);
-  --primary: oklch(1 0 0);
-  --primary-foreground: oklch(0 0 0);
-  --secondary: oklch(0.15 0 0);
-  --secondary-foreground: oklch(1 0 0);
-  --muted: oklch(0.15 0 0);
-  --muted-foreground: oklch(0.6 0 0);
-  --accent: oklch(0.15 0 0);
-  --accent-foreground: oklch(1 0 0);
-  --destructive: oklch(0.6 0.2 30);
-  --border: oklch(1 0 0 / 15%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(1 0 0 / 50%);
-  --chart-1: oklch(0.6 0 0);
-  --chart-2: oklch(0.5 0 0);
-  --chart-3: oklch(0.4 0 0);
-  --chart-4: oklch(0.3 0 0);
-  --chart-5: oklch(0.2 0 0);
-  --sidebar: oklch(0 0 0);
-  --sidebar-foreground: oklch(1 0 0);
-  --sidebar-primary: oklch(1 0 0);
-  --sidebar-primary-foreground: oklch(0 0 0);
-  --sidebar-accent: oklch(0.15 0 0);
-  --sidebar-accent-foreground: oklch(1 0 0);
-  --sidebar-border: oklch(1 0 0 / 15%);
-  --sidebar-ring: oklch(1 0 0 / 50%);
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-.dark {
-  --background: oklch(0 0 0);
-  --foreground: oklch(1 0 0);
-  --card: oklch(0 0 0);
-  --card-foreground: oklch(1 0 0);
-  --popover: oklch(0 0 0);
-  --popover-foreground: oklch(1 0 0);
-  --primary: oklch(1 0 0);
-  --primary-foreground: oklch(0 0 0);
-  --secondary: oklch(0.15 0 0);
-  --secondary-foreground: oklch(1 0 0);
-  --muted: oklch(0.15 0 0);
-  --muted-foreground: oklch(0.6 0 0);
-  --accent: oklch(0.15 0 0);
-  --accent-foreground: oklch(1 0 0);
-  --destructive: oklch(0.6 0.2 30);
-  --border: oklch(1 0 0 / 15%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(1 0 0 / 50%);
-  --chart-1: oklch(0.6 0 0);
-  --chart-2: oklch(0.5 0 0);
-  --chart-3: oklch(0.4 0 0);
-  --chart-4: oklch(0.3 0 0);
-  --chart-5: oklch(0.2 0 0);
-  --sidebar: oklch(0 0 0);
-  --sidebar-foreground: oklch(1 0 0);
-  --sidebar-primary: oklch(1 0 0);
-  --sidebar-primary-foreground: oklch(0 0 0);
-  --sidebar-accent: oklch(0.15 0 0);
-  --sidebar-accent-foreground: oklch(1 0 0);
-  --sidebar-border: oklch(1 0 0 / 15%);
-  --sidebar-ring: oklch(1 0 0 / 50%);
+html {
+  background: var(--color-ink-bg);
+  /* The artboard uses jump links throughout; smooth scroll is opted out of
+     under reduced motion at the bottom of this file. */
+  scroll-behavior: smooth;
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
+body {
+  margin: 0;
+  background: var(--color-ink-bg);
+  color: var(--color-ink-fg);
+  font-family: var(--font-body);
+  /* There was no line-height on <body> at all — the global default was the
+     browser's `normal`, which is why the 15px odds and ends around the page had
+     no consistent leading. */
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  letter-spacing: var(--ls-body);
+  -webkit-font-smoothing: antialiased;
+  /* On <body> itself this is safe. Never move it to a wrapper: an overflow on
+     any ancestor of a sticky element silently kills the pin, which is the trap
+     the works gallery depends on avoiding. */
+  overflow-x: hidden;
+}
+
+a {
+  color: var(--color-ink-fg);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-accent-hover);
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+/* Every icon on the page, which since the Phosphor swap means every arrow, the
+   two profile marks, the globe and the one close control. Two declarations, both
+   of which exist so no call site has to remember them:
+
+   `vertical-align` because an inline <svg> sets its BOTTOM EDGE on the
+   baseline, where a character sets its baseline on the baseline — so an
+   untouched icon rides visibly high next to the text it belongs to. The nudge is
+   in `em` so it tracks the type it sits beside.
+
+   `flex: none` because most of these live inside an `inline-flex` disc or
+   button row, where a shrinkable child gets squeezed as soon as the label is
+   long. The size is `1em` from the component; this stops the layout arguing
+   with it.
+
+   Colour is `currentColor` from Phosphor's own default, so an icon is always the
+   colour of the control it is in and there is nothing here to keep in step. */
+.jn-ico {
+  display: inline-block;
+  vertical-align: -0.125em;
+  flex: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+/* ==========================================================================
+   Reveal system
+   Lives in src/components/jn/motion/ now, on Framer Motion.
+
+   The previous CSS `animation-timeline: view()` implementation is gone. It was
+   written as `animation: <name> linear both`, and the shorthand resets
+   `animation-duration` to its initial value; a scroll-driven animation needs
+   `animation-duration: auto` to fill its range, so at 0s every one of them
+   snapped instantly and rendered as nothing at all. It was also untestable —
+   a CSS view timeline reports `currentTime: null` headlessly, so a working
+   animation and a dead one look identical from a script.
+
+   Curtain rows still clip here, because that is layout rather than motion.
+   ========================================================================== */
+
+[data-curtain] > span[data-row] {
+  display: block;
+  overflow: hidden;
+  /* The glyphs are taller than their own line box, so clipping to the content
+     box shears the type. The padding gives the ink room inside the clip and the
+     equal negative margin takes it back out of the layout, so nothing moves.
+
+     This used to be 0.2em, measured against uppercase Alumni Sans at
+     line-height 0.86 — caps only, no descenders. Both halves of that changed:
+     the leading is now 1.02 and the headings are sentence case, so descenders
+     have to clear the bottom edge too. Re-measured against Coolvetica. */
+  padding-block: 0.26em;
+  margin-block: -0.2em;
+}
+[data-curtain] > span[data-row] > span {
+  display: block;
+}
+
+/* ==========================================================================
+   Keyframes
+   ========================================================================== */
+
+@keyframes jn-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes jn-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+/* ==========================================================================
+   Panel stack
+   Sections overlap: each pulls up over the last and sits a layer higher, with
+   a rounded top edge. `position: relative` is required on every panel or the
+   z-index ordering collapses and the overlap renders in source order.
+   ========================================================================== */
+
+/* Registered so it can be interpolated. An unregistered custom property is a
+   plain string to the animation engine, which would step 0 -> 0.55 rather than
+   tween it. */
+@property --panel-scrim {
+  syntax: "<number>";
+  /* MUST inherit. GSAP writes this as an inline style on the panel, but the
+     element that consumes it is the panel pseudo-element below. A pseudo-
+     element inherits from its originating element, so with inherits:false the
+     scrim resolved to the initial 0 forever and the dim never appeared at all. */
+  inherits: true;
+  initial-value: 0;
+}
+
+.jn-panel {
+  position: relative;
+  border-radius: var(--panel-radius) var(--panel-radius) 0 0;
+}
+
+/* The departure scrim, driven from motion/panel-stack.tsx.
+   A panel dims by having dark PAINTED OVER it, never by losing opacity. Fading
+   the panel itself revealed the sticky paper hero underneath and washed the
+   whole section pale grey. An opaque overlay cannot reveal anything.
+   `pointer-events: none` because it covers the entire panel including its
+   links. */
+.jn-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background: var(--color-ink-bg);
+  opacity: var(--panel-scrim, 0);
+}
+
+.jn-panel--overlap {
+  margin-top: calc(-1 * var(--panel-overlap));
+}
+
+/* ---- The three grounds ---------------------------------------------------
+   `background-color`, NEVER the `background` shorthand, on all three of these
+   and on `.jn-hero`. Four sections now lay a dotted `background-image` over
+   their ground, and the shorthand resets `background-image` every time it is
+   declared, so a ground written as `background: X` silently wipes the dots of
+   any section that also carries `.jn-dots`. This is the same trap the note
+   grain hit further down the file, which is why that rule carries the same
+   warning.
+
+   Each ground also states its own `--dot-ink`, so a section opts into dots by
+   adding one class and never by choosing a colour: the ground it is standing on
+   already knows which way the ink has to go. Setting it here rather than on
+   `.jn-dots` is also what lets Ready and the footer keep the token defined and
+   simply unused. */
+
+.jn-panel--void {
+  background-color: var(--color-ink-bg);
+  /* A known-dark ground, so the ring upgrades from the accent to the tint:
+     9.51:1 instead of 3.24:1. See --color-focus in the tokens. */
+  --color-focus: var(--color-accent-tint);
+  /* Renders as #222224, 1.260:1 against the ground. The only text sitting
+     directly on void is `--color-ink-fg`, which drops from 17.91:1 to 14.21:1
+     on a dot, so this ground had the most room of the three and took it. Every
+     `mute-*` on this panel is inside an opaque card and never meets a dot. */
+  --dot-ink: rgba(242, 242, 245, 0.11);
+}
+
+/* The grey step, and the only LIGHT panel that is not `paper`. It takes the
+   paper ink family and the paper focus ring, because it is a light ground; what
+   makes it a different room is 14 points of lightness, not a different system.
+   The dark cards inside Works ink themselves and are untouched by this. */
+.jn-panel--stone {
+  background-color: var(--color-stone);
+  color: var(--color-paper-fg);
+  /* THE ONE GROUND WHOSE DOTS GO THE OTHER WAY, and it is not a stylistic
+     choice. Stone is the darkest light ground, and `--color-paper-muted` on it
+     measures 4.73:1 — 0.23 above the floor, by design. Any ink darkening this
+     ground therefore breaks it: the strongest dark dot that keeps a muted label
+     at 4.5:1 came out at alpha 0.025, which is invisible.
+
+     Stone is also the only ground with headroom UPWARD, so the dots are
+     perforations of light rather than ink. They render as #f9f8f8, 1.199:1
+     against the ground, which matches the paper sections' dot almost exactly —
+     and because they lighten, `--color-paper-muted` on a dot goes UP to 5.67:1.
+     Strictly better than the flat ground it replaced.
+
+     Do not "fix" this to match the other two. It is measured, and the alternative
+     was darkening `.jn-works__count`, which is a design change rather than a
+     texture. */
+  --dot-ink: rgba(255, 255, 255, 0.75);
+}
+
+.jn-panel--paper {
+  background-color: var(--color-paper);
+  color: var(--color-paper-fg);
+  /* Renders as #e3e3e6, 1.156:1 against the ground. Capped by
+     `--color-paper-muted`, which sits on this ground in the hero rail and the
+     Testimonials lede: 5.43:1 bare, 4.70:1 on a dot. Alpha 0.09 would read
+     slightly stronger and lands at 4.52:1, which passes on paper but leaves no
+     margin worth having. Paper is too close to white for the lightening trick
+     `stone` uses. */
+  --dot-ink: rgba(20, 20, 26, 0.07);
+}
+
+/* ==========================================================================
+   Two grounds behind the grounds
+   Every section now carries a texture, and there are exactly two of them: a dot
+   lattice in CSS on the four sections a reader passes through, and a drawn
+   lattice on canvas in the two that close the page.
+
+   They are the same idea at two temperatures, which is the point. Before this
+   the page had texture in precisely two places — the diagonal stripe on a Works
+   card and the grain on a post-it note, both of them on objects rather than on
+   the page — so five of six section grounds were flat fills and the only thing
+   separating one from the next was 14 points of lightness.
+   ========================================================================== */
+
+/* ---- The dotted ground --------------------------------------------------
+   Hero, Works, Playground, Testimonials. Not Ready and not the footer: those
+   two have the canvas instead, and dots under a warping lattice would be two
+   grids at two pitches arguing with each other.
+
+   ON THE SECTION, NOT A PSEUDO-ELEMENT. `.jn-panel::after` is already spoken
+   for by the departure scrim and `::before` is in use inside several sections,
+   so a background-image on the element itself is both free and one fewer box to
+   reason about. It sits under everything: the dark Works cards and the
+   post-it notes both paint their own opaque grounds straight over it.
+
+   THE PITCH IS DELIBERATELY NOT THE CANVAS PITCH. The grid draws on a nominal
+   55px cell; these dots are on 24px. Matching them would invite the comparison
+   and lose it, because one of the two lattices moves.
+
+   STRENGTH IS MEASURED, NOT PICKED. The grain on a post-it is held near 1%
+   black under a rule that past about 2% "it stops being paper and becomes a
+   pattern" — but that is a rule about grain, which is meant to be felt rather
+   than seen, and a dot grid is meant to be seen. So the ceiling here is set by
+   contrast instead: the worst case for any text is a glyph sitting directly on
+   a dot, and each ground's ink is the strongest value at which every colour
+   that actually appears on that ground still clears 4.5:1 there.
+
+   All three land within a hair of each other in apparent strength — 1.156,
+   1.199 and 1.260 against their own grounds — which is why they read as one
+   texture across four sections rather than three settings. The per-ground
+   arithmetic is with each `--dot-ink` above, and `stone` is the one that goes
+   light instead of dark. */
+.jn-dots {
+  --dot-pitch: 24px;
+  /* THE FALLBACK LIVES IN THE `var()`, NOT IN A DECLARATION, and that is a bug
+     fix rather than a style. Declaring `--dot-ink` here looked equivalent and
+     was not: `.jn-dots` and `.jn-panel--void` are both single-class selectors,
+     so they have equal specificity, and this rule sits later in the file — so a
+     default written here WON against every ground's own value. Measured in the
+     browser, all four dotted sections resolved to the same dark ink, including
+     the black one, where a dark dot on a dark ground is invisible.
+
+     A `var()` fallback only applies when the property is genuinely unset, so it
+     cannot outrank anything. Nothing is in that position today; the
+     conservative direction for an unknown ground is dark and faint. */
+  background-image: radial-gradient(
+    circle,
+    var(--dot-ink, rgba(20, 20, 26, 0.07)) 1px,
+    transparent 1.2px
+  );
+  background-size: var(--dot-pitch) var(--dot-pitch);
+}
+
+/* ---- The drawn lattice --------------------------------------------------
+   The canvas behind Ready and the footer. Everything about its geometry is
+   here rather than in the component, which owns only what it paints.
+
+   `width` and `height` are not redundant next to `inset: 0`. A <canvas> has
+   intrinsic dimensions from its width/height attributes, defaulting to 300x150,
+   and without these it would be laid out at that size and then stretched.
+
+   `z-index: 0` puts it under the section's content, which sits at 1, and the
+   precedent for a full-bleed decorative layer is `.jn-glyphs` at exactly the
+   same value. It must never rise: the nav is 500 and the cursor 900.
+
+   `pointer-events: none` is not a nicety, it is what keeps the rest of the page
+   working. The cursor resolves its state with `closest("[data-cursor]")` from
+   the event target, so a full-bleed layer that accepted pointer events would
+   become the target for every control underneath it. */
+.jn-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ==========================================================================
+   Nav
+   `mix-blend-mode: difference` inverts the nav against whatever passes under
+   it, which is how it stays legible across the light hero and the dark panels.
+   It also creates a stacking context, so the cursor and any overlay must live
+   OUTSIDE this element and above it by z-index.
+   ========================================================================== */
+
+.jn-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px var(--gutter);
+  mix-blend-mode: difference;
+}
+
+.jn-nav__mark {
+  font-family: var(--font-display);
+  font-size: var(--fs-display-4);
+  font-weight: 400; /* single cut: never synthesise bold */
+  letter-spacing: var(--ls-heading);
+  color: var(--color-ink-fg);
+}
+
+.jn-nav__mark span {
+  color: var(--color-accent-tint);
+}
+
+/* The one place in the site that runs lighter than 400, and it is a rendering
+   correction rather than a style choice.
+   `.jn-nav` uses `mix-blend-mode: difference`. Difference inverts the
+   ANTIALIASED EDGE PIXELS of the glyphs along with their solid cores, so the
+   partially-covered pixels around every stroke resolve at full contrast instead
+   of blending away. The result is optically bolder than the same text unblended
+   — measured by toggling the blend off, a 400 nav reads about a weight heavier
+   than 400 body copy at the same size. 300 lands it back at "regular". */
+.jn-nav__links {
+  display: flex;
+  gap: 26px;
+  font-family: var(--font-body);
+  font-size: var(--fs-label);
+  font-weight: 300;
+  letter-spacing: var(--ls-label);
+}
+
+/* Five links, a wordmark and two 40px gutters do not fit across a phone. This
+   was already overflowing by ~13px when the links were 11px mono; readable type
+   costs width, so the gutters and the gap have to give it back. Measured at
+   375px: gutters 40 -> 20, gap 26 -> 10, size 15 -> 14. */
+@media (max-width: 900px) {
+  .jn-nav {
+    padding: 16px 20px;
   }
 
+  .jn-nav__links {
+    gap: clamp(10px, 2.6vw, 18px);
+    font-size: var(--fs-caption);
+  }
+}
+
+/* ==========================================================================
+   Hero
+   Sticky and light, so the dark Works panel rides up over it. The type block
+   recedes on scroll (scale + fade + blur) driven from the Works panel's
+   position; see the hero component.
+   ========================================================================== */
+
+.jn-hero {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  min-height: 520px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 var(--gutter) 34px;
+  /* `background-color`, not the shorthand: the hero carries `.jn-dots` and the
+     shorthand would reset its background-image. See the grounds block above. */
+  background-color: var(--color-paper);
+  color: var(--color-paper-fg);
+  /* Same value as `.jn-panel--paper`, and for the same reason: the hero rail's
+     year and scroll cue are both `--color-paper-muted`. Stated here rather than
+     inherited because the hero is not a `.jn-panel` at all. */
+  --dot-ink: rgba(20, 20, 26, 0.07);
+}
+
+.jn-hero__trail {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.jn-hero__type {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  padding: clamp(70px, 12vh, 130px) 0 clamp(16px, 4vh, 44px);
+  transform-origin: 50% 45%;
+  will-change: transform, opacity, filter;
+}
+
+/* Was a two-column flex row: an "(About me)" kicker beside the headline. The
+   kicker is gone, so this holds one child and only needs to cap its measure. */
+.jn-hero__typeInner {
+  max-width: 1180px;
+}
+
+.jn-hero__headline {
+  font-family: var(--font-display);
+  font-weight: 400; /* single cut: never synthesise bold */
+  font-size: var(--fs-display-1);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+  color: var(--color-paper-fg);
+}
+
+.jn-hero__line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.26em;
+}
+
+.jn-hero__word {
+  display: inline-block;
+  white-space: pre;
+}
+
+/* ---- The reel ---------------------------------------------------------------
+   The headline's second line is a slot machine: a clipped cell with a column of
+   roles inside it, stepping up one role at a time. Motion and its reasoning are
+   in `use-hero-reel.ts`; what is here is the box that makes it possible.
+
+   TWO THINGS HOLD THIS TOGETHER, and both are easy to remove by accident.
+
+   THE CLIP, and the trap in it. `overflow: hidden` on a one-role-tall cell is
+   what turns a column of five into a window showing one. The complication is
+   descenders: the display face is set at line-height 1.02, so `j`, `p`, `g` and
+   `y` hang below their line box and a clip at exactly 1.02em shaves them off.
+
+   The room for them has to go INSIDE each row, never on the cell. `overflow`
+   clips at the PADDING edge, so padding the cell open does not just make space
+   for the current role's descenders, it uncovers a sliver of the roles above
+   and below it: the first build of this leaked fragments of "a spacing pedant"
+   across the line above. Padding each role instead makes every row taller by
+   the same amount, so the rows still tile exactly and the window still holds
+   one of them.
+
+   The cell then negates that padding with a negative margin, which shrinks what
+   it occupies in flow without shrinking what it clips. So the clip is 1.42em
+   tall and descenders survive, while the line still measures 1.02em and lines
+   one and two keep the same leading.
+
+   THE SIZER. The hero block is centred, so its horizontal position follows the
+   headline's width. A cell that measured its current role would therefore slide
+   the whole composition sideways every time the reel stepped. Instead all five
+   roles stack in one grid cell, invisibly, and the cell takes the width of the
+   longest of them for good. Nothing animates a layout property, and nothing
+   moves but the column.
+   -------------------------------------------------------------------------- */
+
+.jn-hero__reelCell {
+  position: relative;
+  display: inline-grid;
+  align-self: start;
+  overflow: hidden;
+  /* Negates the roles' padding. NOT padding on this element: see the note. */
+  margin-block: -0.2em;
+}
+
+/* `display: grid` here is not optional. Without it the roles are five block
+   children stacking vertically, the sizer is five lines tall, and the cell it
+   sizes shows the whole column at once instead of clipping to one line. The
+   named area is what puts all five into ONE cell, so the sizer measures as wide
+   as the longest role and exactly one line tall. */
+.jn-hero__reelSizer {
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-areas: "role";
+  visibility: hidden;
+}
+
+.jn-hero__reelSizer .jn-hero__role {
+  grid-area: role;
+}
+
+.jn-hero__reel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  will-change: transform;
+}
+
+/* The 0.2em is the descender room, and it is what makes one row taller than one
+   line box. Every role carries the same amount, so the rows tile and the step
+   is exactly one row. Change it here and change the cell's margin to match. */
+.jn-hero__role {
+  display: block;
+  white-space: pre;
+  padding-block: 0.2em;
+}
+
+.jn-hero__rail {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: clamp(30px, 5.5vh, 58px);
+  will-change: opacity;
+}
+
+.jn-hero__meta {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: var(--color-paper-muted);
+}
+
+.jn-hero__scroll {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: var(--color-paper-muted);
+}
+
+.jn-hero__scroll span {
+  animation: jn-bob 2.2s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   Buttons, in two tiers
+   THE SPLIT IS THE POINT. There are eleven controls on this page that read as
+   buttons, and until now ten of them were a hairline outline at rest, which
+   means the resume CTA in the hero had exactly the same weight as a modal's
+   close button. Eleven equal calls to action is not a hierarchy.
+
+   FILLED, and there are three: the hero's resume pill, the Ready CTA and the
+   Playground CTA. Solid `--color-accent` carrying `--color-on-accent`, which is
+   the pairing that token was added for and the one the footer marquee band
+   already proves at 5.73:1.
+
+   OUTLINED, everything else: accent border, accent-family label, transparent
+   ground. That is not a new pattern either — `.jn-wpanel__cta` has been doing
+   it on the Works cards all along.
+
+   THE FOCUS RING SURVIVES THE FILL BECAUSE OF `outline-offset`. A 2px ring in
+   `--color-focus` on a button filled with `--color-accent` would be invisible
+   if it sat on the border box; the global rule offsets it 3px, so it lands on
+   the page ground instead — 5.58:1 on paper, and `.jn-panel--void` upgrades it
+   to the tint for 9.51:1. Do not remove that offset.
+   ========================================================================== */
+
+/* Pill button, light variant. The hero's one action, and now filled. */
+.jn-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 13px 13px 24px;
+  border: 1px solid var(--color-accent);
+  border-radius: 0;
+  background-color: var(--color-accent);
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: var(--color-on-accent);
+  transition:
+    background-color 0.25s var(--ease-out-expo),
+    border-color 0.25s var(--ease-out-expo),
+    color 0.25s var(--ease-out-expo);
+}
+
+/* An inversion rather than a shade. The old hover moved a hairline border to
+   the accent and washed the ground to a bare `#dbdad8`; with the accent already
+   spent on the rest state there is nowhere left to go but through it.
+
+   `--color-on-accent` CANNOT COME ALONG: near-white on `--color-accent-hover`
+   measures 2.76:1 and fails outright. The label goes to the void black instead,
+   which is 6.71:1 on that blue. Both halves of this rule are measured; changing
+   one without the other breaks it. */
+.jn-pill:hover {
+  border-color: var(--color-accent-hover);
+  background-color: var(--color-accent-hover);
+  color: var(--color-ink-bg);
+}
+
+.jn-pill__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  /* `currentColor`, so the disc follows the label through the hover inversion
+     rather than needing a second rule to keep it in step. It was
+     `--color-paper-line`, a hairline grey that would now be nearly invisible on
+     the accent fill. */
+  border: 1px solid currentColor;
+  /* 999px stays: this box is square, so the radius is the only thing making
+     it a circle. Zeroing it here would produce a square, not a sharp corner. */
+  border-radius: 999px;
+}
+
+/* ==========================================================================
+   Marquee
+   Duplicated track translated 0 -> -50%, so the loop is seamless. The clone is
+   aria-hidden and holds no focusable content.
+   ========================================================================== */
+
+.jn-strip {
+  position: relative;
+  z-index: 3;
+  margin: 0 calc(-1 * var(--gutter)) -34px;
+  overflow: hidden;
+  padding: 14px 0;
+  background: var(--color-accent);
+  /* Near-white, not the paper ink it used to take: the accent is deep now, and
+     near-black over it measures 3.40:1. See --color-on-accent. */
+  color: var(--color-on-accent);
+}
+
+.jn-strip__track {
+  display: flex;
+  width: max-content;
+  animation: jn-marquee 26s linear infinite;
+}
+
+.jn-strip__group {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  padding-right: 40px;
+  font-family: var(--font-display);
+  font-size: var(--fs-display-2);
+  font-weight: 400; /* single cut: never synthesise bold */
+  letter-spacing: var(--ls-heading);
+  white-space: nowrap;
+}
+
+.jn-strip__item {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+/* ==========================================================================
+   Selected works
+   A tall runway with a pinned stage; vertical scroll becomes horizontal
+   travel. The runway carries NO overflow — the pin dies to an overflow on any
+   ancestor. The clip is on the stage, inside the sticky element.
+   ========================================================================== */
+
+.jn-works {
+  z-index: 1;
+}
+
+/* ---- The pinned rail's vertical runway -------------------------------------
+   THIS HAS TO GROW WITH THE CARD COUNT, and it will not do so on its own.
+
+   `use-works-scroll.ts` measures its horizontal travel from the content
+   (`track.scrollWidth - innerWidth + 80`) and compresses it into this runway's
+   scroll range, so the rail is count-agnostic in one direction only: add a card
+   and the distance grows while the runway does not, which makes the rail move
+   faster sideways per pixel of page scroll rather than travel further.
+
+   340vh was set for three cards. A fourth was added at 760px plus a 28px gap,
+   which took the track from 2423px to 3211px and the travel from 1223px to
+   2011px, so this went to 460vh. The rule it is set by is RUNWAY PER CARD:
+   340/3 is 113vh, 460/4 is 115vh. Size a fifth card the same way.
+
+   That deliberately does not preserve the exact sideways pace, which went from
+   1.21 to 1.33 pixels across per pixel down. Matching 1.21 needs 500vh, i.e.
+   125vh per card, which buys smoothness with a five-screen pin. The residual
+   drift is the fixed `- innerWidth + 80` term in the travel, which is geometry
+   rather than pacing and does not scale with the card count.
+
+   NOTHING BREAKS AT ANY VALUE. `scrollP` is `clamp(wp / 0.72)`, so the
+   horizontal reveal always completes exactly as the gather begins, whatever
+   this is set to. Only the feel changes.
+
+   The other half of the count is the gather fan, `(i - (n - 1) / 2) * 4`, which
+   tilts the outermost cards by 4 degrees at three cards and 6 at four.
+   `.jn-works__viewport` sizes its padding for 6 degrees at a 900px card, so
+   four is the count that consumes that headroom exactly. Beyond four, either
+   the tilt coefficient or that padding has to be revisited. */
+.jn-works__runway {
+  position: relative;
+  height: 460vh;
+}
+
+.jn-works__stage {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  min-height: 460px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(76px, 11vh, 112px) 0 clamp(24px, 5vh, 52px);
+  transform-origin: 50% 34%;
+  will-change: transform, opacity;
+}
+
+.jn-works__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0 var(--gutter) clamp(18px, 4vh, 44px);
+}
+
+.jn-works__title {
+  font-family: var(--font-display);
+  font-weight: 400; /* single cut: never synthesise bold */
+  font-size: var(--fs-display-2);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+}
+
+/* Works is a LIGHT panel now, and this plus the section title are the only two
+   things in the section that had to change colour. The title just inherits from
+   the panel; this one named a dark-ground mute explicitly. Everything inside a
+   card inks itself, which is why the cards needed nothing. */
+.jn-works__count {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: var(--color-paper-muted);
+  text-align: right;
+}
+
+.jn-works__viewport {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  /* Sized for the ROTATED cards, not the upright ones.
+     In the gathered end state each card tilts by up to 6 degrees, and tilting a
+     wide rectangle adds `width * sin(angle)` to its vertical footprint — on a
+     900px card that is ~94px, far more than the tilt costs in height. Left at
+     full height the stack was shorter than its own bounding box and `overflow:
+     hidden` sheared it into a hard straight edge (measured: 43px above, 23px
+     below on an 842px window).
+
+     Note the padding is not itself the clearance: `overflow` clips at the
+     padding box, so this does not move the boundary outward. It works because
+     the cards are `height: 100%` of the CONTENT box, so the padding shortens
+     them by exactly the room their tilt needs. */
+  padding-block: clamp(26px, 5.5vh, 52px);
+}
+
+.jn-works__track {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 0 var(--gutter);
+  width: max-content;
+  will-change: transform;
+}
+
+.jn-wpanel {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--w);
+  height: 100%;
+  max-height: 620px;
+  border-radius: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-line-3);
+  background: repeating-linear-gradient(
+    135deg,
+    #15151a 0 11px,
+    #1c1c22 11px 22px
+  );
+  will-change: transform;
+  /* The foot was absolutely positioned until the whole card became clickable.
+     It is in flow now, and that is the point: `.jn-wpanel__cta::after` stretches
+     to cover the card, and an `inset: 0` resolves against the nearest POSITIONED
+     ancestor — so while the foot was absolute, the overlay covered the foot
+     instead of the card. Keeping the foot static hands that job back here.
+     Do not restore `position: absolute` on the foot. */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 22px 24px;
+  transition: border-color 0.35s var(--ease-out-expo);
+}
+
+/* `data-cursor="view"` is only set on cards that actually open something, so it
+   doubles as the hook for "this card is a control". */
+.jn-wpanel[data-cursor="view"] {
+  cursor: pointer;
+}
+
+.jn-wpanel[data-cursor="view"]:hover {
+  border-color: var(--color-accent);
+}
+
+.jn-wpanel__cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Card art is wider than the card, which is nearer 1.45:1, so it crops rather
+     than letterboxes. Both covers are composed centre-out and survive it: work
+     (01) is a 2.41:1 banner whose middle phone stays whole while the outer two
+     trim, and work (02) is 16:9 losing about a tenth from each side, where the
+     phone is central and the wireframes and component cards flanking it are
+     readable from any slice. Centre-weight any future cover for the same reason. */
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Without this the card is unreadable. The index, title, meta and outlined CTA
+   were designed against a dark stripe; over bright photography they vanish. Two
+   stops, because text sits at both ends of the card. */
+.jn-wpanel[data-cover]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(
+      to top,
+      rgba(11, 11, 13, 0.97) 0%,
+      rgba(11, 11, 13, 0.9) 26%,
+      rgba(11, 11, 13, 0.62) 48%,
+      rgba(11, 11, 13, 0.24) 70%,
+      rgba(11, 11, 13, 0.06) 88%,
+      rgba(11, 11, 13, 0) 100%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(11, 11, 13, 0.66) 0%,
+      rgba(11, 11, 13, 0) 18%
+    );
+}
+
+.jn-wpanel__index {
+  position: absolute;
+  top: 22px;
+  left: 24px;
+  z-index: 2;
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: var(--color-accent-tint);
+}
+
+.jn-wpanel__shot {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: var(--color-mute-5);
+}
+
+/* z-index without `position`, deliberately: this is a flex item, and z-index
+   applies to flex items even when static. Giving it `position: relative` would
+   make it the containing block for the CTA's stretched overlay again. */
+.jn-wpanel__foot {
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.jn-wpanel__name {
+  margin-bottom: 8px;
+  font-family: var(--font-display);
+  font-size: var(--fs-display-3);
+  font-weight: 400; /* single cut: never synthesise bold */
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-heading);
+  color: var(--color-ink-fg);
+}
+
+.jn-wpanel__name.is-muted {
+  color: var(--color-mute-2);
+}
+
+.jn-wpanel__meta {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: var(--color-mute-3);
+}
+
+.jn-wpanel__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 11px 11px 20px;
+  border: 1px solid var(--color-accent);
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--ls-label);
+  color: var(--color-accent-tint);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* The whole card is the hit area, but the BUTTON stays the accessible control:
+   one tab stop, real button semantics, Enter and Space for free. The alternative
+   — a click handler on the <article> — would need its own key handling and would
+   announce nothing. This works only while `.jn-wpanel__foot` stays unpositioned;
+   see the note there. */
+/* THE ONE CONTROL THAT WAS ALREADY ACCENTED, and the pattern the second tier
+   copies. It had no hover or focus state, so on hover a card offered the View
+   cursor and the button itself did nothing. It fills instead of brightening: an
+   escalation into the same accent-plus-on-accent pairing the three primary CTAs
+   use, at 5.73:1. */
+.jn-wpanel__cta:hover,
+.jn-wpanel__cta:focus-visible {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.jn-wpanel__cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.jn-wpanel__ctaIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--color-accent);
+  /* 999px stays: this box is square, so the radius is the only thing making
+     it a circle. Zeroing it here would produce a square, not a sharp corner. */
+  border-radius: 999px;
+}
+
+.jn-wpanel__soon {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 16px;
+  border: 1px solid var(--color-line-4);
+  border-radius: 0;
+  font-family: var(--font-body);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--ls-label);
+  color: var(--color-mute-4);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Overlay shell
+   Shared by the case study and the playground detail.
+
+   THE Z-ORDER HERE IS THE WHOLE REASON THIS IS NOT A NATIVE <dialog>.
+   `showModal()` promotes an element into the top layer, which paints above
+   everything in the z-index scale — including `.jn-cursor` at 900, so the page's
+   own cursor was covered by the backdrop on every open. Staying in normal flow
+   at 800 puts the overlay above the nav (500) and below the cursor (900), which
+   is the entire fix. Do not raise this past the cursor.
+   ========================================================================== */
+
+.jn-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  display: grid;
+  /* An explicit `minmax(0, 1fr)` track, not the implicit auto one. An auto row
+     sizes to the panel's CONTENT, so a panel asking for `height: 100%` gets a
+     percentage of its own content height — circular, resolved as auto, and the
+     row grows to the full unscrolled article (measured: an 812px viewport with
+     a 2780px row, panel centred 1000px below the fold). A definite track also
+     gives `max-height: 100%` on the panel something real to resolve against. */
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  padding: clamp(12px, 3vh, 40px);
+}
+
+.jn-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 11, 13, 0.86);
+  backdrop-filter: blur(6px);
+}
+
+.jn-overlay__panel {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+  color: var(--color-ink-fg);
+  /* Dark viewers use the brighter focus ring. The paper-note viewer overrides
+     this locally with dark ink against its light tint. */
+  --color-focus: var(--color-accent-tint);
+  background: #101014;
+  border: 1px solid var(--color-line-3);
+  border-radius: var(--panel-radius);
+}
+
+/* Focused programmatically on open so the trap has somewhere to start; that is
+   not a keyboard focus and should not draw a ring. */
+.jn-overlay__panel:focus {
+  outline: none;
+}
+
+/* ==========================================================================
+   Case study overlay
+
+   A port of the reference detail page's composition: an eight-column grid with
+   a sticky two-column rail beside a six-column content well. Reference geometry,
+   measured at 1440: 8 x 143.625px, gap 24, rail span 2 (311px) sticky, content
+   span 6 (982px) with 48px of right padding and 48px between chapters.
+
+   Rendered in this site's own type and colour rather than the reference's serif
+   on white — the port is of the layout.
+   ========================================================================== */
+
+.jn-case {
+  display: flex;
+  width: min(94vw, 1240px);
+  height: min(92vh, 1040px);
+}
+
+.jn-case__scroll {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-y: auto;
+  /* The page behind is locked, but a nested scroller still chains to the
+     document once it bottoms out. */
+  overscroll-behavior: contain;
+}
+
+/* ---- Hero ---------------------------------------------------------------- */
+
+.jn-case__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  padding: clamp(28px, 5vh, 56px) clamp(20px, 3vw, 40px) clamp(28px, 4vh, 44px);
+}
+
+/* The reference's glass chip, squared off: `--panel-radius: 0` is a system-wide
+   rule and a lone 50px pill would be the only rounded rectangle on the page. */
+.jn-case__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 6px 14px 6px 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--color-line-4);
+}
+
+.jn-case__chipClient {
+  padding: 3px 9px;
+  background: var(--color-ink-bg);
+  font-family: var(--font-body);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--ls-label);
+  color: var(--color-ink-fg);
+}
+
+.jn-case__chipRole {
+  font-size: var(--fs-caption);
+  color: var(--color-mute-1);
+}
+
+/* The large lead copy, and the one place the display face is asked to set a
+   whole sentence rather than a label. */
+.jn-case__statement {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-display-3);
+  font-weight: 400;
+  line-height: var(--lh-heading);
+  letter-spacing: var(--ls-heading);
+}
+
+/* The reference lifts its key figure to full weight inside the sentence. With
+   a single-cut display face there is no heavier weight to lift to, so the
+   emphasis moves to colour — which on this dark ground is the stronger signal
+   anyway. `strong` stays the right element: the emphasis is semantic. */
+.jn-case__statement strong {
+  font-weight: inherit;
+  color: var(--color-accent-tint);
+}
+
+/* ---- Figures --------------------------------------------------------------
+   One shape only. There used to be three layouts here — a two-up `pair` for
+   before/after phone crops and a horizontally scrolling `wide` for a 5895px
+   contact sheet. Both are gone: the comparisons arrive as single graphics with
+   BEFORE/AFTER composed into them, and the sheet was dropped. Every figure is
+   now a 1280x532 image in a frame. ------------------------------------------ */
+
+.jn-case__figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* The hero is a flex column with `align-items: flex-start`, so without these a
+     figure sizes to its content rather than the column. */
+  width: 100%;
+  min-width: 0;
+}
+
+/* "position: relative" is for the hover cue only; it did not exist before. The
+   frame is also a <button> on any clickable figure, hence the reset of inherited
+   control styles: without it a UA gives it its own background, padding and font. */
+.jn-case__figureFrame {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  min-width: 0;
+  border: 1px solid var(--color-line-3);
+  background: var(--color-figure-ground);
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: inherit;
+  transition: border-color 0.25s var(--ease-out-expo);
+}
+
+button.jn-case__figureFrame:hover,
+button.jn-case__figureFrame:focus-visible {
+  border-color: var(--color-accent);
+}
+
+/* Opacity only. Nothing scales and nothing lifts: this stylesheet has exactly one
+   box-shadow and no intermediate radius, and a figure that grew on hover would be
+   the only moving image on a page that already plays two videos. Because nothing
+   moves, this needs no reduced-motion override, and the frame needs no
+   "overflow: hidden" to contain a transform that does not exist. */
+.jn-case__figureCue {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  padding: 7px 11px;
+  background: rgba(13, 13, 17, 0.82);
+  border: 1px solid var(--color-line-3);
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: var(--ls-label);
+  color: var(--color-paper);
+  opacity: 0;
+  transition: opacity 0.25s var(--ease-out-expo);
+}
+
+button.jn-case__figureFrame:hover .jn-case__figureCue,
+button.jn-case__figureFrame:focus-visible .jn-case__figureCue {
+  opacity: 1;
+}
+
+/* ---- The full-size viewer ------------------------------------------------
+   Absolute, not fixed. GSAP leaves a transform on the overlay panel, and a
+   transformed ancestor makes "fixed" resolve against that ancestor anyway, so
+   "absolute" is the honest description of what happens. The panel is already
+   min(94vw) by min(92vh), so filling it is near enough to filling the screen.
+   Sits above the scroller but well below the cursor at 900. ------------------ */
+
+.jn-case__viewer {
+  /* Fixed and full-window, which is only possible because the viewer portals to
+     <body>. Inside the overlay panel this would be panel-bound: GSAP leaves a
+     transform there, and a transformed ancestor makes fixed resolve against the
+     ancestor rather than the viewport.
+
+     850 sits above the overlay at 800 and below the cursor at 900. Do not raise
+     it past the cursor: that is what made the case study a portal rather than a
+     native dialog in the first place. */
+  position: fixed;
+  inset: 0;
+  z-index: 850;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(20px, 4vh, 56px);
+  background: rgba(6, 6, 9, 0.94);
+}
+
+/* A button rather than a div so the click-to-dismiss is real and not a div with
+   a handler. Removed from the tab order because the labelled Close button is the
+   accessible control; this is a pointer convenience. */
+.jn-case__viewerScrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+
+/* Full width and height of the padded viewer, NOT shrink-to-fit. The first
+   version centred a content-sized box, so the image's own max-width: 100%
+   resolved against its own content width and the picture came out 663px wide
+   against 641px inline: a 1.03x "full size" view. The wrapper has to be the
+   definite box the image scales inside. */
+.jn-case__viewerInner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+/* "contain" so a 2.4:1 comparison sheet is never cropped to fit a squarer panel.
+   The letterboxing is the correct outcome: these are wide sheets in a tall box. */
+.jn-case__viewerImg {
+  display: block;
+  /* Takes the height left over after the caption, and contains inside it, so a
+     2.4:1 sheet fills the width it can and letterboxes rather than cropping. */
+  flex: 1 1 auto;
+  min-height: 0;
+  max-width: 100%;
+  object-fit: contain;
+  border: 1px solid var(--color-line-3);
+}
+
+.jn-case__viewerCaption {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: var(--color-mute-3);
+  text-align: center;
+}
+
+.jn-case__viewerClose {
+  position: absolute;
+  top: clamp(14px, 2vh, 24px);
+  right: clamp(14px, 2vw, 24px);
+  padding: 10px 16px;
+  border: 1px solid var(--color-line-3);
+  background: rgba(13, 13, 17, 0.9);
+  font-family: var(--font-body);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--ls-label);
+  color: var(--color-mute-1);
+  cursor: pointer;
+  transition:
+    border-color 0.25s var(--ease-out-expo),
+    color 0.25s var(--ease-out-expo);
+}
+
+.jn-case__viewerClose:hover,
+.jn-case__viewerClose:focus-visible {
+  border-color: var(--color-accent);
+  color: var(--color-paper);
+}
+
+.jn-case__figureFrame img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* `aspect-ratio` holds the box before the video's metadata arrives. Without it
+   the frame is zero-height on first paint and the whole header jumps once the
+   dimensions land. 16/9 is a placeholder for that first frame only, so it must
+   not crop: case (02)'s clip is 2:1, and with `cover` it lost about 80px from
+   each side, which cut into the phones at both edges of the port figure.
+   `contain` letterboxes against the backing colour instead, which costs a thin
+   band on a clip that is not 16/9 and costs nothing on one that is. */
+.jn-case__figureVideo {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background: var(--color-figure-ground);
+}
+
+/* A figure can carry a short caption naming it, an explanation belonging to it, or
+   both — where a chapter covers two changes, each one's reasoning sits under its own
+   image rather than in a shared block of prose above them. */
+.jn-case__figureCaption {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: var(--fs-caption);
+  line-height: var(--lh-lead);
+  color: var(--color-mute-3);
+}
+
+/* Text in this overlay runs the full content column rather than being capped to a
+   45-75ch measure. The measure rule is the better default for long-form reading,
+   but here every figure is full-column, so a capped paragraph beside one reads as
+   misalignment rather than as comfort. Column width IS the measure here. */
+.jn-case__figureNote {
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--color-mute-1);
+}
+
+/* ---- The eight-column body ----------------------------------------------- */
+
+.jn-case__grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 24px;
+  padding: 0 clamp(20px, 3vw, 40px) clamp(40px, 7vh, 80px);
+}
+
+.jn-case__rail {
+  grid-column: span 2;
+  align-self: start;
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-top: 24px;
+}
+
+.jn-case__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-body);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--ls-label);
+  color: var(--color-mute-2);
+  cursor: pointer;
+  transition: color 0.3s var(--ease-out-expo);
+}
+
+/* THE SECOND TIER, and it stays a tier. These controls are chrome: a close,
+   a back, a chapter, a "read more". Giving them the accent at rest would undo
+   the hierarchy the three filled CTAs just established, so they keep their
+   hairline or plain-text rest state and reveal the accent on interaction
+   instead.
+
+   `--color-accent-tint` and not `--color-accent`, everywhere the ground is
+   dark. The deep accent is 3.24:1 on void and 3.14:1 on the overlay's figure
+   ground; the tint is 9.51:1 and 9.22:1. The token block says this outright and
+   two rules in this file had already got it wrong. */
+.jn-case__back:hover,
+.jn-case__back:focus-visible {
+  color: var(--color-accent-tint);
+}
+
+.jn-case__chapters {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.jn-case__chapter {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: var(--fs-label);
+  line-height: var(--lh-lead);
+  text-align: left;
+  color: var(--color-mute-3);
+  cursor: pointer;
+  transition: color 0.3s var(--ease-out-expo);
+}
+
+.jn-case__chapter:hover {
+  color: var(--color-mute-1);
+}
+
+/* The accent appears here and nowhere else in the overlay, so "where am I"
+   reads at a glance. */
+/* WAS A CONTRAST BUG. `--color-accent` here is the deep blue on the overlay's
+   near-black ground: 3.14:1, against a 4.5:1 requirement for text. The tint is
+   the value that exists for exactly this, at 9.22:1, and it also makes the
+   active chapter genuinely the brightest thing in the rail — which is the whole
+   job of a "you are here". */
+.jn-case__chapter[data-active] {
+  color: var(--color-accent-tint);
+  font-weight: 600;
+}
+
+.jn-case__content {
+  grid-column: span 6;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  padding-top: 24px;
+  padding-right: clamp(0px, 3vw, 48px);
+}
+
+/* ---- Metadata, as the reference's 2x2 block ------------------------------ */
+
+.jn-case__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 32px;
+  margin: 0;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--color-line-2);
+}
+
+.jn-case__facts dt {
+  margin-bottom: 8px;
+  font-family: var(--font-body);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--ls-label);
+  color: var(--color-mute-3);
+}
+
+/* The reference sets label and value in the SAME grey. On this dark ground that
+   would drop the value to ~4:1, so the value takes the next step up the ramp
+   and the quiet pairing survives without failing contrast. */
+.jn-case__facts dd {
+  margin: 0;
+  font-size: var(--fs-label);
+  line-height: var(--lh-lead);
+  color: var(--color-mute-1);
+}
+
+/* ---- The repeated chapter primitive -------------------------------------- */
+
+.jn-case__block {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  scroll-margin-top: 24px;
+}
+
+.jn-case__blockHeading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-display-4);
+  font-weight: 400; /* single cut: never synthesise bold */
+  line-height: var(--lh-heading);
+  letter-spacing: var(--ls-heading);
+}
+
+/* 18px rather than the site's 16px body step, and capped at 68ch. The content
+   column is ~816px wide here; 16px across that measure runs past 100 characters
+   a line, which is unreadable regardless of how faithful the column is. */
+.jn-case__blockBody {
+  margin: 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--color-mute-1);
+}
+
+/* An artifact the reader can take away. Square corners and a hairline, like
+   every other bounded box on the site; the coral edge on hover is the only
+   accent, matching how the case marks a new thing rather than shouting. */
+.jn-case__download {
+  display: inline-flex;
+  /* Load-bearing. The parent is a flex column, and a flex child's `display` is
+     blockified, so the `inline-flex` above becomes `flex` and the box stretches
+     the whole content column: 643px of border around 435px of label. This is
+     what actually makes it hug its text, so do not "fix" a stretched button by
+     changing `display`, which is the property being overridden. */
+  align-self: flex-start;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: clamp(20px, 3vh, 32px);
+  padding: 14px 18px;
+  border: 1px solid var(--color-line-3);
+  border-radius: 0;
+  font-family: var(--font-body);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--ls-label);
+  color: var(--color-mute-1);
+  text-decoration: none;
+  transition:
+    border-color 0.3s var(--ease-out-expo),
+    color 0.3s var(--ease-out-expo);
+}
+
+.jn-case__download:hover {
+  border-color: var(--color-accent);
+  color: var(--color-paper);
+}
+
+/* Weight, not size: the file type is context, and a second size step in a
+   14px control starts to look like a mistake. */
+.jn-case__downloadMeta {
+  font-weight: 400;
+  color: var(--color-mute-3);
+}
+
+/* ---- Below desktop -------------------------------------------------------
+   The reference simply hides its rail here, which it can afford because its
+   "GO BACK" is a link on a real page. This is a modal: hiding the rail would
+   hide the only way out. The rail becomes a compact sticky bar instead and
+   only the chapter list is dropped. ---------------------------------------- */
+
+@media (max-width: 900px) {
+  .jn-case {
+    width: 100%;
+    height: min(94vh, 100%);
+  }
+
+  .jn-case__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .jn-case__rail {
+    grid-column: auto;
+    top: 0;
+    z-index: 2;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 0;
+    background: #101014;
+    border-bottom: 1px solid var(--color-line-2);
+  }
+
+  .jn-case__chapters {
+    display: none;
+  }
+
+  .jn-case__content {
+    grid-column: auto;
+    gap: 40px;
+    padding-top: 0;
+    padding-right: 0;
+  }
+
+  .jn-case__facts {
+    gap: 20px 24px;
+  }
+}
+
+/* ==========================================================================
+   Works under reduced motion
+   The scroll hook never runs, so the track would sit untransformed behind a
+   clip and most panels would be unreachable. Unpin the stage and let the
+   panels stack vertically instead — every project stays readable.
+   ========================================================================== */
+
+/* Narrow screens get the same treatment as reduced motion, for a different
+   reason: the gallery is a HORIZONTAL scroll of cards `min(900px, 62vw)` wide,
+   and below roughly 900px there is no longer room to move them sideways. The
+   cards end up wider than the space they travel in, and the gathered end state
+   — where each one tilts — throws them clean off the left edge.
+
+   Rather than shrink a mechanic that needs width, drop it: stack the panels
+   vertically so every project stays readable. Same outcome as the reduced-motion
+   branch below, so the two share their declarations. */
+@media (max-width: 900px), (prefers-reduced-motion: reduce) {
+  .jn-works__runway {
+    height: auto;
+  }
+
+  .jn-works__stage {
+    position: static;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  /* Block, not flex. Left as a flex row the viewport squeezes the track, and
+     since both the track and the panels drop to `width: auto` here they
+     collapse to a couple of pixels wide instead of filling the column. */
+  .jn-works__viewport {
+    display: block;
+    overflow: visible;
+    padding-block: 0;
+  }
+
+  .jn-works__track {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: auto;
+    gap: clamp(16px, 3vw, 28px);
+    transform: none !important;
+  }
+
+  .jn-wpanel {
+    width: auto;
+    height: auto;
+    min-height: 420px;
+    transform: none !important;
+  }
+
+  /* The display-3 step is sized for a 900px card. On a ~295px one it puts a
+     five-word title on five lines, and the foot then eats over half the card
+     with the cover barely visible behind it. Its own step down here. */
+  .jn-wpanel__name {
+    font-size: clamp(1.25rem, 5.5vw, 1.75rem);
+  }
+}
+
+/* ==========================================================================
+   Playground drum
+   A 3D ring: cards on a cylinder, dimmed backers between them.
+
+   `transform-style: preserve-3d` is flattened by `overflow`, `filter`,
+   `opacity < 1`, `mask` or `contain: paint` ON THE ELEMENT THAT DECLARES IT.
+   Ancestors only clip. So the section may safely carry `overflow: hidden` —
+   it usefully hides the cards rotating out of view — but `.jn-pg__drum` itself
+   must stay clean of every one of those properties.
+   ========================================================================== */
+
+.jn-pg {
+  /* ---- Card sizing, once, for every card ---------------------------------
+     Cards used to carry their own `--w`, nine different widths between 310 and
+     500px. That was inherited from when the faces were striped placeholders,
+     where varied widths gave an otherwise blank ring some rhythm. With real
+     artwork on every face the variation stopped reading as intentional and
+     started reading as cards that had failed to size themselves.
+
+     Uniform now, and the number is bounded by the geometry rather than picked.
+     Nine cards is a 40 degree step, and at the drum's 760px radius the chord
+     between neighbouring spokes is 2 * 760 * sin(20deg), about 520px. A card
+     wider than that intersects its neighbour. 420 leaves roughly 100px of air
+     between faces, which is what keeps the ring reading as separate cards.
+
+     ADDING PIECES NARROWS THAT MARGIN: ten cards is a 36 degree step and a
+     469px chord, still fine at 420; eleven is 427px and too tight. If the drum
+     grows past ten, this has to come down with it. */
+  --pg-card-w: 420px;
+  /* The dimmed backer between one card and the next, at 86% of the card, which
+     is the ratio the per-card values used to keep. */
+  --pg-ghost-w: 362px;
+
+  z-index: 2;
+  /* Was a one-off -104px. Uses the shared token so every join matches. */
+  margin-top: calc(-1 * var(--panel-overlap));
+  /* Was the one Drenched panel on the page: a full-bleed coral ground with
+     near-black type over it. It is the darkest panel now instead, so the drum
+     is lit by its own cards rather than by the wall behind them. The ground
+     comes from `jn-panel--void`; what is left here is the type and the seam. */
+  color: var(--color-ink-fg);
+  border-top: 1px solid var(--color-line-2);
+  /* vh clamps, like every neighbour. Fixed 120/160px did not breathe with the
+     viewport while the sections either side of it did. */
+  padding: clamp(96px, 14vh, 170px) 0 clamp(110px, 16vh, 200px);
+  overflow: hidden;
+}
+
+/* One gap, not a chain of margins. The head used to carry a 56px
+   margin-bottom while the eyebrow inside it carried another 14px, and the two
+   stacked into a gap far wider than any other section. Every neighbour spaces
+   its head with a single gap on the body wrapper; this now matches. */
+.jn-pg__body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: clamp(40px, 6vh, 72px);
+  transform-origin: 50% 26%;
+  will-change: transform, opacity;
+}
+
+.jn-pg__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 var(--gutter);
+}
+
+.jn-pg__head > div {
+  display: grid;
+  gap: 14px;
+}
+
+/* ---- Two rows, set tight ---------------------------------------------------
+   This is the only multi-row curtain on the page, and it exposed a latent bug
+   in the shared curtain rule rather than merely a taste question.
+
+   `[data-curtain] > span[data-row]` pads itself by 0.26em so the clip does not
+   shear the glyphs, then pulls that back with `margin-block: -0.2em`. Its
+   comment says the margin "takes it back out of the layout, so nothing moves",
+   and for ONE row that is true. Between TWO rows the adjacent negative margins
+   COLLAPSE: the gap takes the single most-negative value rather than the sum,
+   so only one -0.2em applies where the rule assumes two. Measured pitch came
+   out at 1.34em against a 1.02 line-height, which is the gap that reads as
+   loose.
+
+   Two fixes, both needed. `flex-direction: column` stops the collapsing so
+   both margins count, and -0.25em then cancels the padding almost exactly,
+   landing the pitch near 1.04em. Scoped here rather than fixed in the shared
+   rule: every other curtain on the site is single-row, where the current
+   behaviour is correct, and changing the shared rule would move type in five
+   sections to fix one.
+   -------------------------------------------------------------------------- */
+.jn-pg__title {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-display);
+  font-weight: 400; /* single cut: never synthesise bold */
+  font-size: var(--fs-display-2);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+}
+
+.jn-pg__title > span[data-row] {
+  margin-block: -0.25em;
+}
+
+/* Stands where the section's lede did: a paragraph that described this section to
+   someone already looking at it, replaced by the one thing in the drum a
+   reader can go and use. The button itself is styled by the grouped
+   dark-ground rule further up; what is left here is the stack. */
+.jn-pg__cta {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  max-width: 34ch;
+}
+
+/* Under the button, because it has to be read before the click, not after. */
+.jn-pg__ctaNote {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  line-height: var(--lh-body);
+  color: var(--color-mute-3);
+  text-wrap: pretty;
+}
+
+.jn-pg__rail {
+  position: relative;
+  height: 620px;
+  perspective: 1400px;
+  perspective-origin: 50% 44%;
+  touch-action: pan-y;
+}
+
+.jn-pg__drum {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 30px;
+  height: 540px;
+  transform-style: preserve-3d;
+  transform: translateZ(-760px) rotateY(0deg);
+  will-change: transform;
+}
+
+.jn-pg__ghost {
+  position: absolute;
+  left: 50%;
+  top: 66px;
+  width: var(--pg-ghost-w);
+  height: 400px;
+  margin-left: calc(var(--pg-ghost-w) / -2);
+  transform: rotateY(var(--rot)) translateZ(520px);
+  backface-visibility: hidden;
+  border-radius: 0;
+  /* The backer between one card and the next. It was a two-step coral stripe,
+     which only worked because the wall behind it was also coral; on the black
+     panel it is a two-step near-black stripe instead, so it reads as a card
+     turned away from the light rather than as a coloured object. */
+  border: 1px solid var(--color-line-1);
+  background: repeating-linear-gradient(
+    135deg,
+    #101015 0 10px,
+    #16161c 10px 20px
+  );
+  opacity: 0.5;
+}
+
+.jn-pg__card {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: var(--pg-card-w);
+  height: 540px;
+  margin-left: calc(var(--pg-card-w) / -2);
+  transform: rotateY(var(--rot)) translateZ(760px);
+  backface-visibility: hidden;
+  border-radius: 0;
+  border: 1px solid #050506;
+  /* Two rows: the plate takes what is left, the caption takes what it needs.
+     The striped gradient that used to fill this is gone from the card, but it
+     survives on `.jn-pg__ghost`, where a blank backer is the whole point. What
+     is left here is the mat the fitted artwork letterboxes onto. */
+  display: grid;
+  grid-template-rows: 1fr auto;
+  overflow: hidden;
+  background: #0c0c10;
+  /* THE ONE box-shadow IN THIS STYLESHEET, and it stays the only one. It is
+     here because this is a rotateY carousel face: the shadow is what separates
+     a card at translateZ(760px) from the drum behind it, which no amount of
+     border can do. It used to be a warm brown-black tuned to a coral ground;
+     on the black panel it is neutral and a little deeper. */
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
+  transition: border-color 0.3s ease;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+
+.jn-pg__card:hover,
+.jn-pg__card:focus-visible {
+  border-color: var(--color-ink-fg);
+}
+
+/* ---- The card, as a plate over a caption band ------------------------------
+   The card used to be a striped rectangle with the label centred over it and
+   the meta pinned to a corner, both absolutely positioned. It shows the piece's
+   own artwork now, and that changed the layout for a specific reason.
+
+   WHY THE PICTURE IS FITTED RATHER THAN CROPPED. Selected Works can crop: those
+   covers are purpose-made 1280x532 banners composed centre-out for their card,
+   which is what `.jn-wpanel__cover` relies on. These eight are found art at
+   five aspect ratios (1920 and 2160 and 2048 square, 1920x1440, 960x720) going
+   into a plate that is roughly square. Cropping would take a third of the width
+   off the two landscape comps and cut the Vader wordmark in half.
+
+   WHICH IS WHY THE CAPTION BAND EXISTS. Fitting a landscape image into a
+   near-square plate leaves height over. Rather than let that read as dead
+   space with text floating on top of it, the leftover becomes a caption: plate
+   above, label and meta below, divided by a hairline. The card reads as a
+   framed plate, which suits a wall of concepts.
+   -------------------------------------------------------------------------- */
+
+/* NOT A FLEX CONTAINER, which is a fix rather than a style choice. An earlier
+   version centred the image with `display: flex` and `align-items: center`,
+   the obvious way to centre a picture and wrong here: an `<img>` is then a flex
+   item, `flex-shrink` defaults to 1, and `width: 100%` loses to its intrinsic
+   aspect. The eight boxes came out at eight different widths, 75px to 498px
+   inside cards of 330-500px, each squashed by a different amount.
+
+   Absolute inset instead, exactly as `.jn-wpanel__cover` does for Selected
+   Works, so the box is always the plate and `object-fit` decides the rest. */
+.jn-pg__cardPlate {
+  position: relative;
+  min-height: 0; /* lets the 1fr grid row actually shrink */
+  overflow: hidden;
+}
+
+/* Both layers occupy the whole plate; only their `object-fit` differs. */
+.jn-pg__cardCover,
+.jn-pg__cardWhole {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-position: center;
+  transition: opacity 0.45s var(--ease-out-expo);
+}
+
+/* At rest: filled, and therefore cropped. */
+.jn-pg__cardCover {
+  object-fit: cover;
+  opacity: 1;
+}
+
+/* On hover: the same picture, whole. Letterboxes onto the card's own mat. */
+.jn-pg__cardWhole {
+  object-fit: contain;
+  opacity: 0;
+}
+
+.jn-pg__card:hover .jn-pg__cardCover,
+.jn-pg__card:focus-visible .jn-pg__cardCover {
+  opacity: 0;
+}
+
+.jn-pg__card:hover .jn-pg__cardWhole,
+.jn-pg__card:focus-visible .jn-pg__cardWhole {
+  opacity: 1;
+}
+
+.jn-pg__cardFoot {
+  display: grid;
+  gap: 6px;
+  padding: 14px 18px 16px;
+  border-top: 1px solid var(--color-line-2);
+  text-align: left;
+}
+
+.jn-pg__cardLabel {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: var(--color-ink-fg);
+  text-wrap: pretty;
+}
+
+/* In the caption band now, so it no longer pins itself to the card's corner.
+   Holds the category alone: the card's number is gone. */
+.jn-pg__cardMeta {
+  display: flex;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: var(--color-mute-1);
+}
+
+/* The legend, its dots and the drag hint used to close this section. All three
+   are gone. The legend labelled four categories the cards already carry as
+   tags, and the hint was the third statement of one affordance: the lede says
+   it in a sentence, the cards are real buttons, and the cursor puts "drag" and
+   "view" under the pointer. The hint was `aria-hidden` too, so it was not
+   carrying anything for assistive tech either. */
+
+/* ==========================================================================
+   Playground detail overlay
+   ========================================================================== */
+
+/* ---- Panel sizing, and why it grew --------------------------------------
+   This was 900px wide AND a two-column grid on desktop, which meant the
+   artwork got 1.1 of 2.1 columns: about 470px to show a 2160px design in. The
+   picture was the smaller half of a panel that existed to display it.
+
+   One column now, and much wider. The image is the content, so it takes the
+   width and the caption sits under it as a band. `min(96vw, 1500px)` rather
+   than a true full-bleed viewer: the backdrop staying visible round the edge
+   is what tells you this is a layer over the page and that clicking out will
+   close it.
+   ------------------------------------------------------------------------- */
+.jn-play {
+  width: min(96vw, 1500px);
+  max-height: 94vh;
+  /* A scroll container even when it has nothing to scroll: that is what makes
+     `overscroll-behavior` apply, so a wheel over this panel cannot chain
+     through to the locked page behind it. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.jn-play__inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  overflow: hidden;
+}
+
+/* The overlay's media frame. Was a striped panel with a caption string in it,
+   from when the eight items were inventions with no art; it holds a demo
+   recording or the cover now. The stripe survives as the ground behind, which
+   is what shows while a video is still loading with `preload="none"`. */
+.jn-play__shot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  background: repeating-linear-gradient(
+    135deg,
+    #15151a 0 10px,
+    #1c1c22 10px 20px
+  );
+}
+
+/* Fitted, not filled, and here that is unarguable: this panel exists to let
+   someone read a design, so cropping it would defeat the panel. The card face
+   crops because it has a shape to fill; the viewer has no such obligation.
+
+   `min(78vh, ...)` with no pixel ceiling: the old `620px` cap meant a 4K
+   display showed the same small picture as a laptop. Height-bound rather than
+   width-bound so the caption band below always stays on screen without the
+   panel needing to scroll. */
+.jn-play__image,
+.jn-play__video {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 78vh;
+  object-fit: contain;
+  background: #0c0c10;
+}
+
+.jn-play__link {
+  display: grid;
+  gap: 6px;
+  margin-top: 4px;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+}
+
+.jn-play__link a {
+  justify-self: start;
+  color: var(--color-accent-tint);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s var(--ease-out-expo);
+}
+
+.jn-play__link a:hover {
+  border-bottom-color: var(--color-accent-tint);
+}
+
+/* Sits UNDER the link rather than beside it, because it has to be read before
+   the click rather than noticed after it. */
+.jn-play__linkNote {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-body);
+  color: var(--color-mute-3);
+}
+
+.jn-play__body {
+  padding: clamp(24px, 3vw, 40px);
+  display: grid;
+  gap: 14px;
+  align-content: center;
+}
+
+.jn-play__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: var(--color-mute-3);
+}
+
+.jn-play__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-display-3);
+  font-weight: 400; /* single cut: never synthesise bold */
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-heading);
+}
+
+.jn-play__desc {
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--color-mute-1);
+}
+
+.jn-play__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--color-line-4);
+  /* 999px stays: this box is square, so the radius is the only thing making
+     it a circle. Zeroing it here would produce a square, not a sharp corner. */
+  border-radius: 999px;
+  background: rgba(11, 11, 13, 0.7);
+  color: var(--color-ink-fg);
+  cursor: pointer;
+  font: inherit;
+  transition:
+    border-color 0.3s var(--ease-out-expo),
+    color 0.3s var(--ease-out-expo);
+}
+
+/* THIS CONTROL HAD NO HOVER OR FOCUS RULE AT ALL, which for the one icon-only
+   button on the site is the worst place to be missing one: there is no label to
+   read, so the only thing telling you it is a control was the cursor. */
+.jn-play__close:hover,
+.jn-play__close:focus-visible {
+  border-color: var(--color-accent-tint);
+  color: var(--color-accent-tint);
+}
+
+/* ==========================================================================
+   Drum under reduced motion
+   The rotation loop never starts, which would leave six of the eight cards
+   edge-on and unreadable. Flatten the ring into an ordinary wrapped row so
+   every card is legible and reachable.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .jn-pg__rail {
+    height: auto;
+    perspective: none;
+  }
+
+  .jn-pg__drum {
+    position: static;
+    height: auto;
+    transform: none !important;
+    transform-style: flat;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 0 var(--gutter);
+  }
+
+  .jn-pg__ghost {
+    display: none;
+  }
+
+  .jn-pg__card {
+    position: relative;
+    left: auto;
+    top: auto;
+    margin-left: 0;
+    width: min(var(--pg-card-w), 100%);
+    height: 320px;
+    transform: none !important;
+  }
+
+  /* The hover unfold is a cross-fade, so it is motion and it stops here. The
+     art stays filled and cropped, which is the resting state either way: what
+     is removed is the transition, not the picture. The viewer still shows every
+     design whole, so nothing is unreachable without the hover. */
+  .jn-pg__cardCover,
+  .jn-pg__cardWhole {
+    transition: none;
+  }
+
+  .jn-pg__card:hover .jn-pg__cardCover,
+  .jn-pg__card:focus-visible .jn-pg__cardCover {
+    opacity: 1;
+  }
+
+  .jn-pg__card:hover .jn-pg__cardWhole,
+  .jn-pg__card:focus-visible .jn-pg__cardWhole {
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   Skills — sticky heading, scrolling list
+   Two columns: a left column that sticks while the right one scrolls past it.
+   No pin, no runway, no tabs. Everything is visible at once; the only motion is
+   a small per-row entrance driven from skills.tsx.
+   ========================================================================== */
+
+.jn-skills {
+  z-index: 3;
+  padding: clamp(96px, 14vh, 170px) var(--gutter) clamp(110px, 16vh, 200px);
+}
+
+.jn-skills__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(40px, 6vh, 72px);
+}
+
+/* Two columns only when there is room for the sticky heading to be worth it.
+   The reference splits at roughly a third to two thirds. */
+@media (min-width: 62rem) {
+  .jn-skills__body {
+    grid-template-columns: minmax(0, 0.42fr) minmax(0, 1fr);
+    gap: clamp(48px, 6vw, 120px);
+  }
+}
+
+/* ---- The sticky column --------------------------------------------------- */
+
+.jn-skills__aside {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+
+@media (min-width: 62rem) {
+  .jn-skills__aside {
+    position: sticky;
+    /* Clears the fixed nav, which is why this is not simply 0. */
+    top: clamp(96px, 14vh, 140px);
+    /* Without this the pin silently does nothing. A grid item stretches to fill
+       its row by default, so the aside would be exactly as tall as the list
+       beside it and have no room left to travel within its own containing
+       block. Shrinking it to its content is what gives sticky somewhere to go. */
+    align-self: start;
+  }
+}
+
+h2.jn-skills__title {
+  font-family: var(--font-display);
+  font-weight: 400; /* single cut: never synthesise bold */
+  font-size: var(--fs-display-2);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+  color: var(--color-paper-fg);
+}
+
+.jn-skills__lede {
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: #4e4e58;
+  max-width: 38ch;
+  text-wrap: pretty;
+}
+
+/* ---- The scrolling column ------------------------------------------------ */
+
+.jn-skills__groups {
+  display: grid;
+  gap: clamp(48px, 8vh, 88px);
+}
+
+.jn-skills__group {
+  display: grid;
+  gap: clamp(20px, 3vh, 36px);
+}
+
+h3.jn-skills__groupTitle {
+  font-family: var(--font-display);
+  font-size: var(--fs-display-3);
+  font-weight: 400; /* single cut: never synthesise bold */
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-heading);
+  /* Took `--color-play-ink` while that token existed, which was a coincidence
+     of value rather than of intent: this is a heading on a PAPER panel, and the
+     playground token happened to hold the same near-black. */
+  color: var(--color-paper-fg);
+}
+
+/* Count on the left, list on the right — the reference's inner split. */
+.jn-skills__groupBody {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: clamp(16px, 3vw, 40px);
+  align-items: start;
+}
+
+.jn-skills__count {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: var(--color-accent);
+  padding-top: 6px;
+}
+
+.jn-skills__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+}
+
+/* Name left, index right, hairline between. The divider is on the row rather
+   than a separator element so the list has no non-content children. */
+.jn-skills__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--color-paper-line);
+}
+
+.jn-skills__row:first-child {
+  border-top: 1px solid var(--color-paper-line);
+}
+
+.jn-skills__skill {
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+  color: #26262e;
+}
+
+.jn-skills__num {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: #7d7d87;
+  flex: none;
+}
+
+/* Reduced motion needs no unpinning here — there is nothing pinned. The rows
+   simply never get their entrance, which the JS already handles by registering
+   no animation at all, so they render at their resting state. */
+
+/* ==========================================================================
+   Testimonials — a sticky title beside a wall of post-it notes
+   The same two-column mechanic as Skills: a left column that sticks while the
+   right one scrolls past it. This replaced a 3×2 ring with the heading in the
+   middle cell, which pushed the heading's two rows to the top and bottom of a
+   tall centre column and left a void between them.
+   ========================================================================== */
+
+.jn-quotes {
+  z-index: 4;
+  padding: clamp(96px, 13vh, 150px) var(--gutter) clamp(200px, 22vh, 300px);
+}
+
+/* One centred column. This was a two-column grid with a sticky title in the
+   narrow side; both the second column and the sticky rules are gone, and with
+   them the only reason this section needed a breakpoint here at all. */
+.jn-quotes__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(40px, 6vh, 72px);
+  justify-items: center;
+}
+
+/* ---- The centred header ------------------------------------------------- */
+
+.jn-quotes__aside {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  text-align: center;
+}
+
+h2.jn-quotes__heading {
+  display: grid;
+  justify-items: center;
+  font-family: var(--font-display);
+  font-weight: 400; /* single cut: never synthesise bold */
+  font-size: var(--fs-display-2);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+  color: var(--color-paper-fg);
+}
+
+/* The measure stays capped even though the column is now full width: a centred
+   caption running the whole 1200px would be unreadable. */
+.jn-quotes__note {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: var(--color-paper-muted);
+  max-width: 30ch;
+}
+
+/* ---- The wall, now one row ----------------------------------------------
+   Four explicit columns above 62rem, so the notes line up in a single row
+   beneath the centred title. `auto-fit` below that, so the row collapses on
+   its own down to one column on a phone.
+
+   WHY ONE ROW RATHER THAN 2x2. The quotes are sorted longest-first, 853 down to
+   351 characters, and a CSS grid row sizes to its own content. Two rows
+   therefore meant the top row was always visibly taller than the bottom one:
+   the section was already uneven, just not deliberately. A single row cannot be
+   uneven with itself, and `align-items: stretch` levels the four against the
+   tallest.
+
+   `min(260px, 100%)` rather than a bare 260px: an auto-fit track floor does not
+   shrink below its own minimum, so with a bare value the notes were wider than
+   their column on a 375px screen and pushed the page sideways. Wrapping it in
+   `min()` lets the floor collapse to the container, which is what actually
+   drops the wall to one column. Do not unwrap it.
+   -------------------------------------------------------------------------- */
+
+.jn-quotes__wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: clamp(20px, 2.4vw, 32px);
+  align-items: stretch;
+  width: 100%;
+}
+
+@media (min-width: 62rem) {
+  .jn-quotes__wall {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* GSAP owns this element's transform for the entrance. The tilt therefore lives
+   on `.jn-quotes__note-inner` instead: two elements, one transform each, so the
+   static rotation cannot be overwritten by the tween.
+
+   `position: relative` is for the backer below, and it is safe: GSAP writes
+   `transform` and `opacity` here and touches neither `position` nor the
+   pseudo-elements. */
+.jn-quotes__card {
+  position: relative;
+  margin: 0;
+  display: flex;
+  will-change: transform, opacity;
+}
+
+/* THE BACKER: a second note under this one, which is what a pad of post-its is.
+   It is also how this site fakes depth everywhere, because it has to. There is
+   exactly one box-shadow in this stylesheet and it belongs to a rotateY
+   carousel face, so elevation is not available; `.jn-pg__ghost` solves the same
+   problem the same way, with an opaque offset plane rather than a shadow.
+
+   Offset down and right, tilted a little further than the note so an edge of it
+   shows on two sides. `z-index: 0` against the note's `1`, so it sits behind
+   without needing a negative index that would escape the card's stacking. */
+.jn-quotes__card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  transform: translate(6px, 7px) rotate(var(--note-back-tilt, 0deg));
+  background: var(--note-edge, #e3ddd1);
+  pointer-events: none;
+}
+
+.jn-quotes__note-inner {
+  position: relative; /* anchors the tape and the full-note hit area */
+  z-index: 1; /* above the backer */
+  flex: 1;
+  /* Tightened when the wall became a row of four. At 273px wide the old 28px
+     padding and 32px gap were sized for a 385px card and made the note
+     portrait; see the height budget on `.jn-quotes__attr`. */
+  padding: clamp(18px, 1.8vw, 22px);
+  display: grid;
+  gap: clamp(14px, 2vh, 18px);
+  align-content: space-between;
+  /* Square, like every corner on the page, and no shadow. There is exactly one
+     box-shadow in this stylesheet and it belongs to a rotateY carousel face. A
+     lifted card here would be the only elevation on the site. Depth comes from
+     the backer above instead, and the paper read from the grain below. */
+  border-radius: 0;
+  border: 1px solid var(--note-edge, #e3ddd1);
+  transform: rotate(var(--note-tilt, 0deg));
+  transition: transform 240ms var(--ease-out-expo);
+}
+
+.jn-quotes__note-inner,
+.jn-quoteModal {
+  background-color: var(--note-bg, #faf8f4);
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.013) 0 1px,
+      transparent 1px 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.009) 0 1px,
+      transparent 1px 4px
+    );
+}
+
+/* Tape belongs to the paper; the enlarged note keeps it outside its scroller. */
+.jn-quotes__note-inner::before,
+.jn-quoteModal__inner::before {
+  content: "";
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  width: 86px;
+  height: 26px;
+  margin-left: -43px;
+  z-index: 3;
+  transform: rotate(var(--note-tape-tilt, 0deg));
+  background: rgba(255, 255, 255, 0.42);
+  border-left: 1px solid rgba(255, 255, 255, 0.5);
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  pointer-events: none;
+}
+
+/* One palette for the wall and the portalled paper. */
+.jn-note {
+  --note-fg: #26262e;
+  --note-muted: #4f4f5b;
+  --note-secondary: #5f5f6a;
+  --color-focus: #26262e;
+}
+
+.jn-note[data-tint="0"], .jn-note--0 {
+  --note-bg: #f4ecd8;
+  --note-edge: #e4d8ba;
+  --note-tilt: -2.8deg;
+  --note-tape-tilt: 1.8deg;
+  --note-back-tilt: -4.6deg;
+}
+.jn-note[data-tint="1"], .jn-note--1 {
+  --note-bg: #f7e2d8;
+  --note-edge: #eccdbe;
+  --note-tilt: 3.1deg;
+  --note-tape-tilt: -2.2deg;
+  --note-back-tilt: 5deg;
+}
+.jn-note[data-tint="2"], .jn-note--2 {
+  --note-bg: #e4e5f4;
+  --note-edge: #cfd1e8;
+  --note-tilt: 2.4deg;
+  --note-tape-tilt: -1.5deg;
+  --note-back-tilt: 4.2deg;
+}
+.jn-note[data-tint="3"], .jn-note--3 {
+  --note-bg: #eaeee4;
+  --note-edge: #d5ddcc;
+  --note-tilt: -3.3deg;
+  --note-tape-tilt: 2.4deg;
+  --note-back-tilt: -5.1deg;
+}
+
+/* The outer card belongs to GSAP; pointer and keyboard feedback move only paper. */
+@media (prefers-reduced-motion: no-preference) {
+  .jn-quotes__card:focus-within .jn-quotes__note-inner {
+    transform: translateY(-4px) rotate(calc(var(--note-tilt) * 0.45));
+  }
+  .jn-quotes__note-inner:has(.jn-quotes__more:active) {
+    transform: translateY(-1px) rotate(calc(var(--note-tilt) * 0.65));
+    transition-duration: 100ms;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .jn-quotes__note-inner:hover {
+    transform: translateY(-4px) rotate(calc(var(--note-tilt) * 0.45));
+  }
+  .jn-quotes__note-inner:has(.jn-quotes__more:active) {
+    transform: translateY(-1px) rotate(calc(var(--note-tilt) * 0.65));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jn-quotes__note-inner { transition: none; }
+}
+
+.jn-quotes__excerpt {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  min-width: 0;
+}
+
+/* Clamped, not cut at a character count: the notes sit in a fluid column, so a
+   fixed cut would break at a different word at every width. The full text is
+   one click away and still in the DOM, so nothing is hidden from a screen
+   reader or a crawler.
+
+   FOUR LINES, DOWN FROM SEVEN, and the number is what makes these read as
+   notes. Four across a 1200px content width is about 277px each, and four
+   lines of 16px/1.6 body plus the padding, the gap, the attribution row and the
+   "Read more" comes to roughly 274px tall. 277 by 274 is square, which is the
+   proportion of an actual post-it. Raising the clamp makes them tall and thin
+   and they stop reading as notes at all. */
+.jn-quotes__text {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--note-fg);
+  text-wrap: pretty;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
+.jn-quotes__more {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: var(--ls-label);
+  color: var(--note-fg);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: #b4b4bd;
+  cursor: pointer;
+  transition: text-decoration-color 0.3s var(--ease-out-expo);
+}
+
+/* The accent lands on the underline rather than the label. A post-it's ink is
+   its own small family (`#26262e` here, and the same value on `__text` and
+   `__name`), deliberately lighter than `--color-paper-fg` because it is sitting
+   on warm note stock rather than on the page. Recolouring only this one of the
+   three would break that family for no gain, so the reveal is the rule already
+   animating: the underline goes accent. Measured across all five note tints it
+   runs 4.95:1 to 5.83:1, worst on the blue one, against a resting `#b4b4bd`
+   that was 1.65:1 to 1.94:1 and did not clear the 3:1 a UI indicator wants.
+
+   The note ink tokens are shared with the enlarged paper so neither view
+   inherits the dark page's light text. */
+.jn-quotes__more:hover,
+.jn-quotes__more:focus-visible {
+  text-decoration-color: var(--color-accent);
+}
+
+/* THE WHOLE NOTE IS THE BUTTON, without nesting one interactive element inside
+   another. `.jn-quotes__card` is a `<figure>` wrapping a `<figcaption>` so it
+   cannot be a `<button>`, and it already contains this one; a card-level button
+   would be invalid interactive content. So this button keeps its own text and
+   grows an invisible hit layer over the note instead.
+
+   `inset: 0` resolves against `.jn-quotes__note-inner`, the nearest positioned
+   ancestor. Above the text at `z-index: 2` and below the tape at 3, which is
+   only about paint order: the tape is `pointer-events: none`, so it never
+   steals a click either way.
+
+   THREE THINGS THIS BUYS. One tab stop per card, so `:focus-within` still means
+   what the rules below assume. No `stopPropagation` anywhere, because there is
+   still only one handler. And the custom cursor covers the whole note for free:
+   `cursor.tsx` resolves `closest("[data-cursor]")`, and this layer's element IS
+   the button that already carries `data-cursor="link"`.
+
+   THE COST, stated rather than discovered later: an overlay across the note
+   blocks text selection of the quote. That is inherent to the pattern. The full
+   text is one click away in the modal and stays in the DOM for screen readers
+   and crawlers, so nothing is lost but the drag. */
+.jn-quotes__more::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/* THE HEIGHT BUDGET LIVES HERE, because this block is what nearly wrecked the
+   row. At 273px wide the attribution measured 134px against a 102px quote: the
+   longest name wraps to two lines and the longest headline wrapped to two more,
+   so the credit was taller than the testimonial and the note came out 273x351,
+   portrait rather than square.
+
+   Nothing was dropped to fix it. The three lines all remain, because which of
+   them is which is load-bearing: a manager's endorsement and a mentor's are not
+   the same claim. What changed is that the headline clamps to one line on the
+   CARD only, with the full text in the modal, plus a step down in size and
+   tighter spacing. Roughly 50px back, and the quote is the tallest thing in the
+   note again, which is the right hierarchy for a testimonial.
+
+   `align-items: start` rather than `center`: with a two-line name, centring
+   pushed the avatar down away from the line it belongs to. */
+.jn-quotes__attr {
+  display: flex;
+  align-items: start;
+  gap: 10px;
+  padding-top: 11px;
+  border-top: 1px solid var(--note-edge, #e3ddd1);
+}
+
+/* 999px stays: the box is square, so the radius is the only thing making it a
+   circle. Zeroing it here would produce a square, not a sharp corner. */
+.jn-quotes__avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--note-edge, #ddd7ca);
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: #5a5a66;
+}
+
+/* Three lines, ranked. The name carries the endorsement, the headline says why it
+   counts, and the relationship is context rather than claim, so it recedes. */
+.jn-quotes__who {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.jn-quotes__name {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--note-fg);
+}
+
+/* ONE LINE ON THE CARD, and the full headline in the modal. This is the only
+   thing the card truncates, and a job title is the safest field to do it to:
+   "Head of Software Engineering at You Source" wrapped to two lines at 273px
+   and it is the single biggest contributor to the note's height after the name.
+   Never clamp the name: a person's name with an ellipsis in it reads as a bug. */
+.jn-quotes__headline {
+  font-family: var(--font-body);
+  font-size: 0.8125rem; /* 13px */
+  line-height: 1.35;
+  color: var(--note-muted);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
+.jn-quotes__rel {
+  font-family: var(--font-body);
+  font-size: 0.8125rem; /* 13px */
+  line-height: 1.35;
+  letter-spacing: var(--ls-label);
+  color: var(--note-secondary);
+}
+
+/* The modal has the room, so it shows the headline whole. */
+.jn-quoteModal__attr .jn-quotes__headline {
+  display: block;
+  font-size: var(--fs-caption);
+}
+
+/* ---- The full-quote overlay ---------------------------------------------
+   Shares the site's modal shell, so it inherits the portal, focus trap, Esc,
+   scroll lock and the z-order that keeps the custom cursor painting over it. */
+
+.jn-quoteModal {
+  width: min(94vw, 680px);
+  max-height: min(92dvh, 100%);
+  background-color: var(--note-bg);
+  color: var(--note-fg);
+  border: 1px solid var(--note-edge);
+  border-radius: 0;
+}
+
+.jn-quoteModal__inner {
+  position: relative;
+  margin: 0;
+}
+
+.jn-quoteModal__scroll {
+  margin: 0;
+  display: grid;
+  gap: 28px;
+  padding: clamp(24px, 4vw, 44px);
+  max-height: min(86dvh, calc(100dvh - 82px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--note-secondary) var(--note-bg);
+}
+
+.jn-quoteModal__close {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 8px;
+  margin-left: -8px;
+  border: 0;
+  background: none;
+  font-family: var(--font-body);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--ls-label);
+  color: var(--note-fg);
+  cursor: pointer;
+}
+.jn-quoteModal__close:hover,
+.jn-quoteModal__close:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.jn-quoteModal__text {
+  margin: 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--note-fg);
+  text-wrap: pretty;
+}
+
+.jn-quoteModal__attr {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--note-edge);
+}
+
+/* ==========================================================================
+   Custom cursor
+   A dot that tracks the pointer and a ring that trails it. Mounted as a sibling
+   of the nav, never inside it: the nav uses `mix-blend-mode: difference`, which
+   creates a stacking context that no descendant can paint above.
+   ========================================================================== */
+
+.jn-cursor {
+  position: fixed;
+  inset: 0;
+  z-index: 900; /* above the nav at 500 */
+  pointer-events: none;
+}
+
+/* Both layers are positioned at the origin and moved by transform only, so the
+   pointer position never touches layout. */
+.jn-cursor__dot,
+.jn-cursor__ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 999px;
+  /* Centres the element on the pointer without a second transform that GSAP
+     would then overwrite when it writes x/y. */
+  margin: -4px 0 0 -4px;
+  will-change: transform;
+}
+
+.jn-cursor__dot {
+  width: 8px;
+  height: 8px;
+  background: var(--color-accent);
+  transition: opacity 0.25s var(--ease-out-expo);
+}
+
+.jn-cursor__ring {
+  width: 38px;
+  height: 38px;
+  margin: -19px 0 0 -19px;
+  border: 1px solid var(--color-accent);
+  display: grid;
+  place-items: center;
+  transition:
+    width 0.35s var(--ease-out-expo),
+    height 0.35s var(--ease-out-expo),
+    margin 0.35s var(--ease-out-expo),
+    background 0.35s var(--ease-out-expo),
+    border-color 0.35s var(--ease-out-expo);
+}
+
+.jn-cursor__label {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  /* Sits on the accent, so it takes the on-accent ink. */
+  color: var(--color-on-accent);
+  opacity: 0;
+  transition: opacity 0.25s var(--ease-out-expo);
+}
+
+/* ---- States -------------------------------------------------------------- */
+
+/* A link needs no label; the ring simply opens up to acknowledge the target. */
+.jn-cursor[data-state="link"] .jn-cursor__ring {
+  width: 58px;
+  height: 58px;
+  margin: -29px 0 0 -29px;
+}
+
+.jn-cursor[data-state="link"] .jn-cursor__dot {
+  opacity: 0;
+}
+
+/* "View" and "Drag" fill the ring so the label is readable against it. */
+.jn-cursor[data-state="view"] .jn-cursor__ring,
+.jn-cursor[data-state="drag"] .jn-cursor__ring {
+  width: 74px;
+  height: 74px;
+  margin: -37px 0 0 -37px;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.jn-cursor[data-state="view"] .jn-cursor__label,
+.jn-cursor[data-state="drag"] .jn-cursor__label {
+  opacity: 1;
+}
+
+.jn-cursor[data-state="view"] .jn-cursor__dot,
+.jn-cursor[data-state="drag"] .jn-cursor__dot {
+  opacity: 0;
+}
+
+/* The native cursor is hidden only where the custom one actually renders — the
+   same query the component gates on, so the two can never disagree and leave a
+   pointer-less page. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   body {
-    @apply bg-background text-foreground;
+    cursor: none;
   }
+
+  /* Text selection still needs a real I-beam; a custom ring communicates
+     nothing about where the caret will land. */
+  input,
+  textarea,
+  [contenteditable] {
+    cursor: auto;
+  }
+}
+
+/* ==========================================================================
+   Ready for work — the closing statement
+   Centred, headline flanked by brackets with one word dimmed, one pill action,
+   and a faint glyph field behind it.
+   ========================================================================== */
+
+.jn-ready {
+  z-index: 6;
+  position: relative;
+  overflow: hidden;
+  /* Asymmetric on purpose. The footer carries `--panel-overlap`, so it is
+     pulled up 110px over this section: a symmetric pad left the email line
+     almost touching the marquee band. The bottom value absorbs the overlap
+     and still leaves real space. */
+  padding: clamp(100px, 15vh, 180px) var(--gutter) clamp(200px, 26vh, 340px);
+}
+
+.jn-ready__body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: clamp(20px, 3vh, 34px);
+}
+
+/* ---- The headline -------------------------------------------------------- */
+
+.jn-ready__headline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 3vw, 56px);
+}
+
+/* Sized off the headline so the brackets scale with it. They used to be thinned
+   to weight 300 to read as framing rather than punctuation; the display face has
+   one cut, so that separation is carried by colour alone now. */
+.jn-ready__bracket {
+  font-family: var(--font-display);
+  font-weight: 400; /* single cut: never synthesise bold */
+  font-size: var(--fs-display-2);
+  line-height: var(--lh-display);
+  color: var(--color-mute-4);
+}
+
+.jn-ready__title {
+  display: grid;
+  font-family: var(--font-display);
+  font-weight: 400; /* single cut: never synthesise bold */
+  font-size: var(--fs-display-2);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+}
+
+.jn-ready__line {
+  display: block;
+}
+
+/* Word spacing is explicit: whitespace between these spans collapses
+   unpredictably at display sizes with negative tracking. */
+.jn-ready__word + .jn-ready__word {
+  margin-left: 0.22em;
+}
+
+.jn-ready__word--dim {
+  color: var(--color-mute-3);
+}
+
+/* ---- Action -------------------------------------------------------------- */
+
+.jn-ready__foot {
+  display: grid;
+  justify-items: center;
+  gap: clamp(16px, 2.6vh, 28px);
+  padding-top: clamp(12px, 2vh, 24px);
+}
+
+.jn-ready__lede {
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--color-mute-1);
+  max-width: 46ch;
+  text-wrap: pretty;
+}
+
+/* NO LONGER AN OUTLINED PILL. The note that used to sit here read "the accent is
+   already spent on the footer band and the Playground panel, so this stays a
+   hairline" — and both halves of that stopped being true. The Playground's
+   accent drench is long gone, so the only accent surface left on the page is
+   the footer marquee, which is a band of moving type rather than anything a
+   reader can press. There was plenty of accent left to spend, and the two
+   things most worth spending it on are the closing CTA and the game link.
+
+   THE DARK-GROUND BUTTON, shared by two sections. Grouped rather than copied:
+   `.jn-pill` is the light-ground equivalent in the hero, and a third variant
+   written out by hand is how a system ends up with three buttons that are
+   almost the same. If this rule changes, both sections change together. */
+.jn-ready__button,
+.jn-pg__ctaButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 14px 14px 26px;
+  border: 1px solid var(--color-accent);
+  border-radius: 0;
+  background-color: var(--color-accent);
+  color: var(--color-on-accent);
+  font-family: var(--font-body);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--ls-label);
+  text-decoration: none;
+  transition:
+    background-color 0.35s var(--ease-out-expo),
+    border-color 0.35s var(--ease-out-expo),
+    color 0.35s var(--ease-out-expo);
+}
+
+/* THIS RULE WAS A CONTRAST BUG, TWICE OVER, and the history is worth keeping
+   because both versions failed silently.
+
+   First it set `background: var(--color-ink)`, which is not a token — only
+   `--color-ink-bg` and `--color-ink-fg` exist — so it did nothing at all. The
+   fix for that set `color: var(--color-accent)`, which is worse than nothing:
+   the deep accent on the void ground measures 3.24:1, and the token block says
+   in as many words that it "CANNOT be read as text on a dark ground". A hover
+   state that makes the label harder to read is not a hover state.
+
+   Now the button is filled, so the hover is the same inversion the hero pill
+   uses: through the accent to the lighter blue, with the label dropping to the
+   void black at 6.71:1. */
+.jn-ready__button:hover,
+.jn-pg__ctaButton:hover {
+  border-color: var(--color-accent-hover);
+  background-color: var(--color-accent-hover);
+  color: var(--color-ink-bg);
+}
+
+/* 999px stays: this box is square, so the radius is the only thing making it a
+   circle. */
+.jn-ready__buttonIcon,
+.jn-pg__ctaIcon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  font-size: var(--fs-caption);
+}
+
+.jn-ready__address {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: var(--color-mute-4);
+}
+
+/* ---- The glyph field ----------------------------------------------------- */
+
+/* Decorative texture only. Masked radially so it dissolves before it reaches the
+   type, and `user-select: none` so dragging across the section does not scoop up
+   several hundred hash marks. */
+.jn-glyphs {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  align-content: center;
+  justify-content: center;
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  line-height: var(--lh-body);
+  letter-spacing: var(--ls-label);
+  color: var(--color-mute-1);
+  opacity: 0.13;
+  mask-image: radial-gradient(
+    ellipse 46% 52% at 50% 50%,
+    #000 0%,
+    transparent 78%
+  );
+}
+
+.jn-glyphs__row {
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* BOTH selectors. `.jn-ready__button` and `.jn-pg__ctaButton` share one rule
+     whose own comment warns that a hand-written third variant is how a system
+     ends up with three buttons that are almost the same — and then this
+     override listed only one of the two, so the Playground CTA kept its
+     transition while the identical Ready CTA lost it. Exactly the drift the
+     grouping exists to prevent. */
+  .jn-ready__button,
+  .jn-pg__ctaButton {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   Contact footer
+   A marquee band, then a bordered location block and the link columns.
+   ========================================================================== */
+
+/* Visible to assistive technology only. The footer landmark needs a name even
+   though the design shows no heading there. */
+.jn-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.jn-contact {
+  z-index: 7;
+  overflow: hidden;
+}
+
+/* The band gets its own class rather than reusing `.jn-strip`, whose -34px
+   bottom margin exists to cancel the HERO's padding and here would drag the band
+   down over the footer content. */
+.jn-band {
+  position: relative;
+  overflow: hidden;
+  padding: 16px 0;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.jn-band .jn-strip__group {
+  font-size: var(--fs-display-2);
+  gap: 32px;
+  padding-right: 32px;
+}
+
+.jn-band .jn-strip__item {
+  gap: 32px;
+}
+
+.jn-contact__body {
+  /* Lifted off the canvas. The lattice is `z-index: 0` inside this footer, so
+     without a layer of its own this content would share a stacking level with
+     it and paint in source order — which happens to work, and would break the
+     moment anything was reordered. `.jn-ready__body` already states the same
+     pair for the same reason. */
+  position: relative;
+  z-index: 1;
+  padding: clamp(56px, 9vh, 104px) var(--gutter) 40px;
+}
+
+.jn-contact__main {
+  display: grid;
+  gap: clamp(40px, 6vh, 72px);
+}
+
+@media (min-width: 56rem) {
+  .jn-contact__main {
+    grid-template-columns: auto minmax(0, 1fr);
+    justify-content: space-between;
+    align-items: start;
+    gap: clamp(40px, 8vw, 140px);
+  }
+}
+
+/* ---- Location block ------------------------------------------------------ */
+
+.jn-contact__place {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+}
+
+/* One bordered block with internal dividers, as in the reference. */
+.jn-contact__box {
+  border: 1px solid var(--color-line-4);
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+}
+
+.jn-contact__boxTop {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-line-4);
+}
+
+.jn-contact__boxRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: stretch;
+}
+
+.jn-contact__globe,
+.jn-contact__code {
+  display: grid;
+  place-items: center;
+  padding: 10px 12px;
+}
+
+.jn-contact__globe {
+  border-right: 1px solid var(--color-line-4);
+  font-size: var(--fs-caption);
+}
+
+.jn-contact__mode {
+  display: grid;
+  place-items: center;
+  padding: 10px 16px;
+  text-align: center;
+}
+
+.jn-contact__code {
+  border-left: 1px solid var(--color-line-4);
+  /* Reads bottom-to-top, as in the reference. */
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.jn-contact__copy {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: var(--color-mute-3);
+}
+
+/* ---- Links --------------------------------------------------------------- */
+
+.jn-contact__links {
+  display: grid;
+  gap: clamp(20px, 3vh, 32px);
+  justify-items: start;
+}
+
+@media (min-width: 56rem) {
+  .jn-contact__links {
+    justify-items: end;
+  }
+}
+
+/* Column-first flow, so reading down each column follows source order. */
+.jn-contact__cols {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(3, auto);
+  gap: 10px clamp(28px, 5vw, 72px);
+  font-size: var(--fs-label);
+}
+
+@media (min-width: 40rem) {
+  .jn-contact__cols {
+    grid-template-rows: repeat(2, auto);
+  }
+}
+
+/* The two profile links. A row rather than plain text, because each now leads
+   with its service's mark. */
+.jn-contact__social {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.jn-contact__mail {
+  font-size: var(--fs-label);
+  color: var(--color-mute-1);
+}
+
+/* ==========================================================================
+   Outside of work — the portal
+   A pinned stage where a doorway aperture opens and the page passes through it.
+   The aperture is a `clip-path` inset, not a scale: it reveals rather than
+   resizes, so nothing behind it distorts and nothing reflows.
+
+   The choreography is scrubbed in Framer Motion (src/components/jn/outside.tsx).
+   This file is layout only.
+   ========================================================================== */
+
+/* No `overflow` on this section. `overflow` on ANY ancestor silently disables
+   `position: sticky` on a descendant, which would unpin the stage and leave the
+   whole portal scrolling past as a static block. The stage below sets its own
+   `overflow: hidden` to contain the expanding door frame, and an element clipping
+   itself does not break its own stickiness. */
+.jn-out {
+  z-index: 5;
+}
+
+.jn-out__runway {
+  position: relative;
+  height: 300vh;
+}
+
+.jn-out__stage {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  min-height: 520px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+/* ---- Beat 1: title ------------------------------------------------------- */
+
+.jn-out__intro {
+  grid-area: 1 / 1;
+  position: relative;
+  z-index: 3;
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  text-align: center;
+  padding: 0 var(--gutter);
+}
+
+/* Was shared with `.jn-out__eyebrow`, which is gone. The hint is not. */
+.jn-out__hint {
+  font-family: var(--font-body);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: var(--ls-label);
+  color: var(--color-mute-3);
+}
+
+.jn-out__title {
+  font-family: var(--font-display);
+  font-weight: 400; /* single cut: never synthesise bold */
+  font-size: var(--fs-display-1);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+}
+
+/* The doorway and the WebGL burn canvas are gone with the portal effect. The
+   section is now a title that clears, then cards that fade up. */
+
+/* ---- Beat 3: through the door -------------------------------------------- */
+
+.jn-out__reveal {
+  grid-area: 1 / 1;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.jn-out__world {
+  width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  padding: clamp(24px, 5vh, 64px) var(--gutter);
+  display: grid;
+  gap: clamp(20px, 3vh, 36px);
+  align-content: center;
+}
+
+.jn-out__lede {
+  text-align: center;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--color-mute-1);
+}
+
+.jn-out__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: clamp(16px, 2vw, 28px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jn-out__card {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  padding: 16px;
+  border: 1px solid var(--color-line-3);
+  border-radius: 0;
+  background: #101014;
+}
+
+.jn-out__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 0;
+  overflow: hidden;
+  background: repeating-linear-gradient(
+    135deg,
+    #15151a 0 10px,
+    #1c1c22 10px 20px
+  );
+  display: grid;
+  place-items: center;
+}
+
+.jn-out__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.jn-out__slot {
+  padding: 0 16px;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: var(--color-mute-4);
+}
+
+.jn-out__cardText {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.jn-out__cardTag {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  color: var(--color-accent-tint);
+}
+
+.jn-out__cardTitle {
+  font-family: var(--font-display);
+  font-size: var(--fs-display-3);
+  font-weight: 400; /* single cut: never synthesise bold */
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-heading);
+}
+
+.jn-out__blurb {
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--color-mute-1);
+  text-wrap: pretty;
+}
+
+/* ---- Unpinned branch ----------------------------------------------------- */
+
+/* Reduced motion, and viewports too short to pin without trapping the scroll.
+   Now a media query rather than a JS-applied class: with the portal gone there is
+   no shader state for the stylesheet to stay in step with, so the component no
+   longer needs to tell CSS which branch is live. */
+@media (prefers-reduced-motion: reduce), (max-height: 620px) {
+  .jn-out__runway {
+    height: auto;
+  }
+
+  .jn-out__stage {
+    position: static;
+    height: auto;
+    min-height: 0;
+    display: block;
+    padding: clamp(84px, 12vh, 140px) 0;
+  }
+
+  .jn-out__intro {
+    margin-bottom: 48px;
+    /* The hint tells you to keep scrolling for something that is already here. */
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .jn-out__hint {
+    display: none;
+  }
+
+  .jn-out__reveal,
+  .jn-out__card,
+  .jn-out__lede {
+    height: auto;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .jn-out__world {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+/* ==========================================================================
+   Reduced motion
+   Last, unlayered, so it wins. Every mechanic resolves to its end state with
+   the content intact rather than merely frozen.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* Reduced motion for the reveals is handled in JS, by `useReducedMotion`
+     gating every scrub at its resting value. That has to be the JS path rather
+     than a stylesheet override: the scrubs write inline `style`, which no
+     stylesheet rule can outrank without `!important` on every property, and an
+     exit left running would permanently fade content out for someone who asked
+     for less motion. Curtain rows stay unclipped here. */
+  [data-curtain] > span[data-row] {
+    overflow: visible;
+  }
+
+  /* Marquee stops but stays readable, and becomes user-scrollable so the
+     content past the fold is still reachable. */
+  .jn-strip {
+    overflow-x: auto;
+  }
+
+  .jn-strip__track {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .jn-hero__scroll span {
+    animation: none !important;
+  }
+
+  /* The hero recede is written from JS; the component refuses to start it
+     under this preference, so there is nothing to undo here.
+
+     THE REEL IS NOT LISTED, AND MUST NOT BE. `.jn-hero__reelCell` keeps its
+     `overflow: hidden` under this preference, which is the only reason the
+     headline reads "a designer" rather than all five roles stacked. That looks
+     like an oversight next to the curtain unclip a few rules up, so: it is not
+     one. The curtain's rows travel fully out of their clip and need it removed
+     to be seen at all; the reel's rows tile inside the clip and need it kept.
+     Its motion is refused in use-hero-reel.ts, which is the right layer. */
 }
